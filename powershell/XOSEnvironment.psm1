@@ -217,8 +217,11 @@ function Test-XOSEnvironment {
         param([string]$Name, [string]$Command, [string]$InstallHint, [string]$MinVersion)
         Write-Host -NoNewline "  $Name ... "
         try {
-            $out = & cmd /c "$Command 2>&1" 2>$null
-            if ($LASTEXITCODE -eq 0 -and $out) {
+            $parts = $Command -split " "
+            $exe = $parts[0]
+            $args = $parts[1..$($parts.Length - 1)] -join " "
+            $out = & $exe $args 2>&1 | Out-String
+            if ($LASTEXITCODE -eq 0 -and $out.Trim()) {
                 $ver = ($out -split "`n")[0] -replace "[^0-9.]", ""
                 if ($MinVersion -and [version]$ver -lt [version]$MinVersion) {
                     Write-Host "[OLD] $ver (need >= $MinVersion)" -ForegroundColor Yellow
