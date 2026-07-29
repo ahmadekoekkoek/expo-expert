@@ -118,7 +118,7 @@ class Constitution:
             if rule.fix:
                 lines.append(f"- **Fix**: {rule.fix}")
             if rule.applies_to and rule.applies_to != ["*"]:
-                lines.append(f"- **Applies to**: {", ".join(rule.applies_to)}")
+                lines.append(f"- **Applies to**: {'|'.join(rule.applies_to)}")
             lines.append("")
         return "\n".join(lines)
 
