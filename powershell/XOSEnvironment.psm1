@@ -219,9 +219,13 @@ function Test-XOSEnvironment {
         try {
             $parts = $Command -split " "
             $exe = $parts[0]
-            $rest = $parts[1..$($parts.Length - 1)]
-            $out = & $exe @rest 2>&1 | Out-String
-            if ($LASTEXITCODE -eq 0 -and $out.Trim()) {
+            $args = $parts[1..$($parts.Length - 1)]
+            $tmpOut = [System.IO.Path]::GetTempFileName()
+            $tmpErr = [System.IO.Path]::GetTempFileName()
+            $proc = Start-Process -FilePath $exe -ArgumentList $args -NoNewWindow -Wait -RedirectStandardOutput $tmpOut -RedirectStandardError $tmpErr -PassThru
+            $out = Get-Content $tmpOut -Raw
+            Remove-Item $tmpOut, $tmpErr -ErrorAction SilentlyContinue
+            if ($proc.ExitCode -eq 0 -and $out.Trim()) {
                 $ver = ($out -split "`n")[0] -replace "[^0-9.]", ""
                 if ($MinVersion -and [version]$ver -lt [version]$MinVersion) {
                     Write-Host "[OLD] $ver (need >= $MinVersion)" -ForegroundColor Yellow
