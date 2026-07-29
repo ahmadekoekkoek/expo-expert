@@ -226,11 +226,16 @@ function Test-XOSEnvironment {
             return
         }
 
-        try {
-            $out = & $exe @(($Command -split " ")[1..99]) 2>&1 | Out-String
-            if ($out.Trim()) {
-                $ver = ($out -split "`n")[0] -replace "[^0-9.]", ""
-                if ($ver -and $MinVersion) {
+        $out = Invoke-Expression "cmd /c `"$Command 2>&1`"" 2>$null
+        if (-not $out) {
+            $out = Invoke-Expression "$Command 2>&1" 2>$null
+        }
+
+        if ($out -is [array]) { $out = $out -join "`n" }
+        if ($out.Trim()) {
+            $ver = ($out -split "`n")[0] -replace "[^0-9.]", ""
+            if ($ver) {
+                if ($MinVersion) {
                     try {
                         if ([version]$ver -lt [version]$MinVersion) {
                             Write-Host "[OLD] $ver (need >= $MinVersion)" -ForegroundColor Yellow
@@ -242,8 +247,8 @@ function Test-XOSEnvironment {
             } else {
                 Write-Host "[FOUND]" -ForegroundColor Green
             }
-        } catch {
-            Write-Host "[FOUND] (version check failed)" -ForegroundColor Yellow
+        } else {
+            Write-Host "[FOUND]" -ForegroundColor Green
         }
     }
 
