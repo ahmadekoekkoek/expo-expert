@@ -1,8 +1,0 @@
-Metadata-Version: 2.4
-Name: xos
-Version: 1.0.0
-Summary: XOS — AI-Native Experience Engineering Operating System for React Native + Expo
-Requires-Python: >=3.12
-Requires-Dist: jsonschema>=4.20
-Requires-Dist: pyyaml>=6.0
-Requires-Dist: pydantic>=2.5
