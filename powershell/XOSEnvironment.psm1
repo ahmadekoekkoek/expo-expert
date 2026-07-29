@@ -216,10 +216,7 @@ function Test-XOSEnvironment {
     function Test-Tool {
         param([string]$Name, [string]$Command, [string]$InstallHint, [string]$MinVersion)
         Write-Host -NoNewline "  $Name ... "
-        $parts = $Command -split " "
-        $exe = $parts[0]
-        $rest = if ($parts.Length -gt 1) { $parts[1..($parts.Length - 1)] } else { @() }
-
+        $exe = ($Command -split " ")[0]
         $found = Get-Command $exe -ErrorAction SilentlyContinue
         if (-not $found) {
             Write-Host "[MISSING]" -ForegroundColor Red
@@ -227,12 +224,10 @@ function Test-XOSEnvironment {
             $script:allOk = $false
             return
         }
-
         try {
-            $out = & $exe @rest 2>&1 | Out-String
+            $out = cmd /c "$Command 2>&1"
             if ($out.Trim()) {
-                $ver = ($out -split "
-")[0] -replace "[^0-9.]", ""
+                $ver = ($out -split "`n")[0] -replace "[^0-9.]", ""
                 if ($MinVersion -and $ver -and [version]$ver -lt [version]$MinVersion) {
                     Write-Host "[OLD] $ver (need >= $MinVersion)" -ForegroundColor Yellow
                     $script:allOk = $false
@@ -240,14 +235,10 @@ function Test-XOSEnvironment {
                     Write-Host "[OK] $ver" -ForegroundColor Green
                 }
             } else {
-                Write-Host "[MISSING]" -ForegroundColor Red
-                if ($InstallHint) { Write-Host "       Install: $InstallHint" -ForegroundColor Gray }
-                $script:allOk = $false
+                Write-Host "[FOUND] (version unknown)" -ForegroundColor Green
             }
         } catch {
-            Write-Host "[MISSING]" -ForegroundColor Red
-            if ($InstallHint) { Write-Host "       Install: $InstallHint" -ForegroundColor Gray }
-            $script:allOk = $false
+            Write-Host "[FOUND] (version check failed)" -ForegroundColor Yellow
         }
     }
 
