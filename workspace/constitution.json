@@ -1,0 +1,137 @@
+{
+  "name": "default",
+  "rules": {
+    "C001": {
+      "id": "C001",
+      "category": "architecture",
+      "description": "Every screen must have a specification node in the experience graph",
+      "severity": "block",
+      "check": "validate_screen_has_spec",
+      "fix": "Create a spec in specs/",
+      "applies_to": [
+        "*"
+      ]
+    },
+    "C002": {
+      "id": "C002",
+      "category": "architecture",
+      "description": "No circular dependencies between features",
+      "severity": "block",
+      "check": "validate_no_circular_deps",
+      "fix": "Break cycles",
+      "applies_to": [
+        "*"
+      ]
+    },
+    "C003": {
+      "id": "C003",
+      "category": "design",
+      "description": "All spacing must use design token scale (4,8,16,24,32,48)",
+      "severity": "block",
+      "check": "validate_spacing_scale",
+      "fix": "Use nearest design token",
+      "applies_to": [
+        "*"
+      ]
+    },
+    "C004": {
+      "id": "C004",
+      "category": "design",
+      "description": "All colors must reference design tokens, not hardcoded hex",
+      "severity": "block",
+      "check": "validate_color_tokens",
+      "fix": "Use semantic color tokens",
+      "applies_to": [
+        "*"
+      ]
+    },
+    "C005": {
+      "id": "C005",
+      "category": "motion",
+      "description": "Every animation must define a reduced-motion fallback",
+      "severity": "block",
+      "check": "validate_reduced_motion_fallback",
+      "fix": "Add reducedMotionFallback",
+      "applies_to": [
+        "*"
+      ]
+    },
+    "C006": {
+      "id": "C006",
+      "category": "motion",
+      "description": "No animation may exceed 16ms frame budget on JS thread",
+      "severity": "block",
+      "check": "validate_frame_budget",
+      "fix": "Use Reanimated worklet",
+      "applies_to": [
+        "*"
+      ]
+    },
+    "C007": {
+      "id": "C007",
+      "category": "gesture",
+      "description": "Every interactive element must have haptic feedback defined",
+      "severity": "block",
+      "check": "validate_haptic_coverage",
+      "fix": "Add haptic pattern to gesture node",
+      "applies_to": [
+        "*"
+      ]
+    },
+    "C008": {
+      "id": "C008",
+      "category": "accessibility",
+      "description": "All touch targets must be at least 44pt",
+      "severity": "block",
+      "check": "validate_touch_targets",
+      "fix": "Increase to >= 44pt",
+      "applies_to": [
+        "*"
+      ]
+    },
+    "C009": {
+      "id": "C009",
+      "category": "accessibility",
+      "description": "Every screen must have a semantic heading",
+      "severity": "block",
+      "check": "validate_semantic_heading",
+      "fix": "Add accessibilityRole header",
+      "applies_to": [
+        "*"
+      ]
+    },
+    "C010": {
+      "id": "C010",
+      "category": "performance",
+      "description": "All scrollable lists must use FlashList",
+      "severity": "block",
+      "check": "validate_flashlist_usage",
+      "fix": "Replace with @shopify/flash-list",
+      "applies_to": [
+        "*"
+      ]
+    },
+    "C011": {
+      "id": "C011",
+      "category": "quality",
+      "description": "No generated code may contain TODO or FIXME",
+      "severity": "warn",
+      "check": "validate_no_todos",
+      "fix": "Resolve or convert to spec",
+      "applies_to": [
+        "*"
+      ]
+    },
+    "C012": {
+      "id": "C012",
+      "category": "quality",
+      "description": "Every feature must have at least one test",
+      "severity": "warn",
+      "check": "validate_test_coverage",
+      "fix": "Add test node to graph",
+      "applies_to": [
+        "*"
+      ]
+    }
+  }
+}

@@ -35,6 +35,10 @@ from .core.node_factory import (
     create_state_node,
     create_design_token_node,
 )
+from .core.constitution import Constitution, constitution_from_file
+from .core.change import ChangeManager
+from .core.clarify import ClarifyEngine
+from .core.diff import GraphDiffer
 
 
 def cmd_init(args):
@@ -240,6 +244,31 @@ def main():
     p_know_list.add_argument("--tag", help="Filter by tag")
     p_know_sub.add_parser("tokens", help="Show design/motion/haptic tokens")
 
+    # constitution
+    p_constitution = sub.add_parser("constitution", help="Manage project constitution")
+    p_constitution_sub = p_constitution.add_subparsers(dest="subcommand")
+    p_constitution_sub.add_parser("show", help="Show current constitution")
+    p_constitution_sub.add_parser("validate", help="Validate specs against constitution")
+    p_constitution_sub.add_parser("edit", help="Edit a rule")
+
+    # change
+    p_change = sub.add_parser("change", help="Manage change proposals")
+    p_change_sub = p_change.add_subparsers(dest="subcommand")
+    p_change_sub.add_parser("list", help="List active changes")
+    p_change_sub.add_parser("new", help="Create a new change proposal").add_argument("name", help="Change name")
+    p_change_sub.add_parser("apply", help="Apply a change").add_argument("name", help="Change name")
+    p_change_sub.add_parser("archive", help="Archive a completed change").add_argument("name", help="Change name")
+
+    # clarify
+    p_clarify = sub.add_parser("clarify", help="Interactive spec refinement")
+    p_clarify.add_argument("spec", help="Path to spec file")
+
+    # diff
+    p_diff = sub.add_parser("diff", help="Show graph differences")
+    p_diff.add_argument("--before", help="Path to previous graph")
+    p_diff.add_argument("--after", help="Path to current graph")
+
+
     args = parser.parse_args()
 
     if args.command == "init":
@@ -256,9 +285,91 @@ def main():
         cmd_anti_slop(args)
     elif args.command == "knowledge":
         cmd_knowledge(args)
+    elif args.command == "constitution":
+        cmd_constitution(args)
+    elif args.command == "change":
+        cmd_change(args)
+    elif args.command == "clarify":
+        cmd_clarify(args)
+    elif args.command == "diff":
+        cmd_diff(args)
     else:
         parser.print_help()
 
 
 if __name__ == "__main__":
     main()
+
+
+
+
+def cmd_constitution(args):
+    import json
+    path = "workspace/constitution.json"
+    if args.subcommand == "show":
+        const = Constitution.from_json_file(path)
+        print(const.to_markdown())
+    elif args.subcommand == "validate":
+        const = Constitution.from_json_file(path)
+        print(f"Constitution loaded: {len(const.rules)} rules")
+        violations = const.validate("workspace/specs")
+        if violations:
+            for v in violations:
+                print(f"  [{'BLOCK' if v.severity == 'error' else 'WARN'}] {v.rule}: {v.message}")
+        else:
+            print("All rules satisfied.")
+    elif args.subcommand == "edit":
+        print("Edit rules in workspace/constitution.json")
+    else:
+        print("Usage: xos constitution {show|validate|edit}")
+
+def cmd_change(args):
+    import os, json
+    changes_dir = "workspace/changes"
+    archive_dir = "workspace/archive"
+    if args.subcommand == "list":
+        if os.path.isdir(changes_dir):
+            entries = os.listdir(changes_dir)
+            if entries:
+                for c in sorted(entries):
+                    prop_path = os.path.join(changes_dir, c, "proposal.json")
+                    title = c
+                    if os.path.exists(prop_path):
+                        try:
+                            prop = json.load(open(prop_path))
+                            title = prop.get("title", c)
+                        except: pass
+                    print(f"  {c} [{title}]")
+            else:
+                print("No active changes.")
+        else:
+            print("No active changes.")
+    elif args.subcommand == "new":
+        name = getattr(args, "name", "unnamed")
+        os.makedirs(os.path.join(changes_dir, name), exist_ok=True)
+        proposal = {"title": name, "phase": "proposal", "created": __import__("datetime").datetime.now().isoformat()}
+        json.dump(proposal, open(os.path.join(changes_dir, name, "proposal.json"), "w"), indent=2)
+        print(f"Created change: {name}")
+    elif args.subcommand == "apply":
+        name = getattr(args, "name", "")
+        src = os.path.join(changes_dir, name)
+        dst = os.path.join(archive_dir, name)
+        if os.path.isdir(src):
+            import shutil
+            shutil.move(src, dst)
+            print(f"Archived change: {name}")
+        else:
+            print(f"Change not found: {name}")
+    else:
+        print("Usage: xos change {list|new|apply}")
+
+def cmd_clarify(args):
+    spec_path = getattr(args, "spec", "workspace/specs")
+    print(f"Scanning specs in: {spec_path}")
+    print("Ready to clarify. Implement full ClarifyEngine integration here.")
+
+def cmd_diff(args):
+    old_path = getattr(args, "old", "graph/experience.json")
+    new_path = getattr(args, "new", "")
+    print(f"Diff: {old_path} vs {new_path or 'current'}")
+    print("Ready to diff. Implement full GraphDiffer integration here.")
