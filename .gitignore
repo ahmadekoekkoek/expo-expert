@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+xos.egg-info/
+*.egg-info/
+dist/
+build/
+.env
+node_modules/
+.expo/
+android/
+ios/
+.DS_Store
+*.log

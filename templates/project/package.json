@@ -1,0 +1,46 @@
+{
+  "name": "Expo XOS Project",
+  "version": "1.0.0",
+  "description": "Scaffolded by XOS — AI-Native Experience Engineering Operating System",
+  "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "lint": "eslint . --ext ts,tsx",
+    "test": "jest",
+    "test:e2e": "detox test",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "expo": "latest",
+    "expo-router": "latest",
+    "expo-haptics": "latest",
+    "expo-status-bar": "latest",
+    "react": "latest",
+    "react-native": "latest",
+    "react-native-reanimated": "latest",
+    "react-native-gesture-handler": "latest",
+    "@shopify/flash-list": "latest",
+    "nativewind": "latest",
+    "tailwindcss": "latest",
+    "zustand": "latest",
+    "@tanstack/react-query": "latest",
+    "react-hook-form": "latest",
+    "@hookform/resolvers": "latest",
+    "zod": "latest",
+    "react-native-mmkv": "latest"
+  },
+  "devDependencies": {
+    "@types/react": "latest",
+    "typescript": "latest",
+    "jest": "latest",
+    "@testing-library/react-native": "latest",
+    "detox": "latest",
+    "eslint": "latest"
+  },
+  "jest": {
+    "preset": "jest-expo"
+  }
+}

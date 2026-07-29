@@ -1,0 +1,68 @@
+{
+  "patterns": {
+    "touchTarget": {
+      "name": "Minimum Touch Target",
+      "description": "Every interactive element must have at least 44x44pt touch area",
+      "rule": "min-touch-target",
+      "minSize": { "width": 44, "height": 44 },
+      "spacing": 8,
+      "exceeds": "oversized-hit-slop"
+    },
+    "focusOrder": {
+      "name": "Logical Focus Order",
+      "description": "Focus follows visual reading order: top-to-bottom, left-to-right",
+      "rule": "focus-order",
+      "priority": "critical",
+      "scope": "per-screen"
+    },
+    "headingHierarchy": {
+      "name": "Heading Hierarchy",
+      "description": "One h1 per screen, h2-h6 in logical nested order, no skip levels",
+      "rule": "heading-hierarchy",
+      "maxH1PerScreen": 1,
+      "enforceNesting": true
+    },
+    "contrastRatio": {
+      "name": "WCAG AA Contrast",
+      "description": "Text must meet 4.5:1 (normal) or 3:1 (large) contrast ratio",
+      "rule": "contrast",
+      "normalText": { "min": 4.5, "enhanced": 7.0 },
+      "largeText": { "min": 3.0, "enhanced": 4.5 }
+    },
+    "screenReaderLabels": {
+      "name": "Screen Reader Labels",
+      "description": "Every interactive element must have accessibilityLabel or accessibilityRole",
+      "rule": "screen-reader-label",
+      "requiredFor": ["button", "link", "image", "input", "toggle", "switch"],
+      "format": "descriptive, action-oriented"
+    },
+    "reducedMotion": {
+      "name": "Reduced Motion",
+      "description": "Respect prefers-reduced-motion; replace animations with static transitions",
+      "rule": "reduced-motion",
+      "detection": "AccessibilityInfo.isReduceMotionEnabled()",
+      "fallback": "instant opacity crossfade, no translation"
+    },
+    "dynamicType": {
+      "name": "Dynamic Type Scaling",
+      "description": "Support Dynamic Type; use relative units, not fixed pixel sizes",
+      "rule": "dynamic-type",
+      "baseScale": "medium",
+      "maxScale": "accessibilityExtraLarge",
+      "noEllipsisTruncation": true
+    },
+    "roleMapping": {
+      "name": "Semantic Role Mapping",
+      "description": "Map every component to its correct accessibilityRole",
+      "rule": "semantic-role",
+      "mapping": {
+        "button": "button",
+        "link": "link",
+        "image": "image",
+        "heading": "header",
+        "list": "list",
+        "listitem": "none (list parent handles)"
+      }
+    }
+  }
+}

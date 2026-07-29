@@ -1,0 +1,211 @@
+"""
+PowerShell XOS Environment Module
+Manages local dev environment: bootstrap, health checks, diagnostics.
+"""
+using namespace System.Management.Automation
+
+# Module manifest
+$Script:ModuleRoot = $PSScriptRoot
+
+function Get-XOSEnvironment {
+    <#
+    .SYNOPSIS
+    Returns the current XOS environment status.
+    #>
+    [CmdletBinding()]
+    param()
+
+    $info = @{
+        OS             = if ($IsWindows) { "Windows" } elseif ($IsMacOS) { "macOS" } else { "Linux" }
+        Node           = $null
+        Bun            = $null
+        PNPM           = $null
+        Python         = $null
+        Expo           = $null
+        EAS            = $null
+        Java           = $null
+        AndroidSDK     = $null
+        Xcode          = $null
+        Git            = $null
+        Docker         = $null
+    }
+
+    try { $info.Node = (node --version 2>$null) -replace 'v', '' } catch {}
+    try { $info.Bun = (bun --version 2>$null) } catch {}
+    try { $info.PNPM = (pnpm --version 2>$null) } catch {}
+    try { $info.Python = (python3 --version 2>$null) -replace 'Python ', '' } catch {}
+    try { $info.Expo = (npx expo --version 2>$null) } catch {}
+    try { $info.Git = (git --version 2>$null) -replace 'git version ', '' } catch {}
+    try { $info.Docker = (docker --version 2>$null) -replace 'Docker version ', '' } catch {}
+
+    if ($IsMacOS) {
+        try { $info.Xcode = (xcodebuild -version 2>$null | Select-Object -First 1) -replace 'Xcode ', '' } catch {}
+    }
+
+    if ($env:ANDROID_HOME) { $info.AndroidSDK = $env:ANDROID_HOME }
+    elseif ($env:ANDROID_SDK_ROOT) { $info.AndroidSDK = $env:ANDROID_SDK_ROOT }
+
+    return [PSCustomObject]$info
+}
+
+function Test-XOSPrerequisites {
+    <#
+    .SYNOPSIS
+    Validates that all required tools for Expo + React Native development are installed.
+    #>
+    [CmdletBinding()]
+    param(
+        [switch]$iOS,
+        [switch]$Android
+    )
+
+    $env = Get-XOSEnvironment
+    $missing = @()
+    $warnings = @()
+
+    if (-not $env.Node) { $missing += "Node.js (>= 18)" }
+    if (-not $env.PNPM) { $missing += "pnpm (npm i -g pnpm)" }
+    if (-not $env.Expo) { $missing += "Expo CLI (npm i -g expo-cli)" }
+    if (-not $env.Git) { $missing += "Git" }
+
+    if ($Android -or (-not $iOS -and -not $IsMacOS)) {
+        if (-not $env.AndroidSDK) { $missing += "Android SDK (set ANDROID_HOME)" }
+        if (-not $env.Java) { $warnings += "Java/JDK 17+ recommended for Android builds" }
+    }
+
+    if ($iOS -or $IsMacOS) {
+        if (-not $env.Xcode) { $missing += "Xcode (macOS only)" }
+    }
+
+    if ($missing.Count -gt 0) {
+        Write-Host "❌ Missing prerequisites:" -ForegroundColor Red
+        $missing | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red }
+        return $false
+    }
+
+    if ($warnings.Count -gt 0) {
+        Write-Host "⚠️  Warnings:" -ForegroundColor Yellow
+        $warnings | ForEach-Object { Write-Host "  - $_" -ForegroundColor Yellow }
+    }
+
+    Write-Host "✅ All prerequisites met" -ForegroundColor Green
+    return $true
+}
+
+function Invoke-XOSHealthCheck {
+    <#
+    .SYNOPSIS
+    Runs a comprehensive health check on the XOS project environment.
+    #>
+    [CmdletBinding()]
+    param(
+        [string]$ProjectPath = "."
+    )
+
+    $checks = @{}
+
+    # Check package.json
+    $pkgJson = Join-Path $ProjectPath "package.json"
+    if (Test-Path $pkgJson) {
+        $checks.PackageJSON = "✅ Found"
+    } else {
+        $checks.PackageJSON = "❌ Missing — run 'xos bootstrap' first"
+    }
+
+    # Check node_modules
+    $nm = Join-Path $ProjectPath "node_modules"
+    if (Test-Path $nm) {
+        $checks.NodeModules = "✅ Installed"
+    } else {
+        $checks.NodeModules = "⚠️  Missing — run 'pnpm install'"
+    }
+
+    # Check tsconfig
+    $tsconfig = Join-Path $ProjectPath "tsconfig.json"
+    if (Test-Path $tsconfig) {
+        $checks.TypeScript = "✅ Configured"
+    } else {
+        $checks.TypeScript = "⚠️  Missing"
+    }
+
+    # Check nativewind
+    $tailwind = Join-Path $ProjectPath "tailwind.config.js"
+    if (Test-Path $tailwind) {
+        $checks.NativeWind = "✅ Configured"
+    } else {
+        $checks.NativeWind = "⚠️  Missing"
+    }
+
+    # Check eas.json
+    $eas = Join-Path $ProjectPath "eas.json"
+    if (Test-Path $eas) {
+        $checks.EASBuild = "✅ Configured"
+    } else {
+        $checks.EASBuild = "⚠️  Missing — run 'eas build:configure'"
+    }
+
+    Write-Host "XOS Health Check — $ProjectPath`n" -ForegroundColor Cyan
+    foreach ($key in $checks.Keys | Sort-Object) {
+        $color = if ($checks[$key] -match "^✅") { "Green" } else { "Yellow" }
+        Write-Host "  $key : $($checks[$key])" -ForegroundColor $color
+    }
+
+    $healthy = ($checks.Values | Where-Object { $_ -match "^❌" }).Count -eq 0
+    return $healthy
+}
+
+function Initialize-XOSProject {
+    <#
+    .SYNOPSIS
+    Bootstraps a new Expo project with XOS conventions.
+    #>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$ProjectName,
+
+        [string]$Template = "blank-typescript"
+    )
+
+    Write-Host "🚀 Bootstrapping XOS project: $ProjectName" -ForegroundColor Cyan
+
+    # Create Expo project
+    npx create-expo-app@latest $ProjectName --template $Template
+    Set-Location $ProjectName
+
+    # Install XOS dependencies
+    pnpm add expo-router expo-haptics react-native-reanimated react-native-gesture-handler @shopify/flash-list nativewind tailwindcss zustand @tanstack/react-query react-hook-form @hookform/resolvers zod react-native-mmkv
+
+    # Dev dependencies
+    pnpm add -D @types/react typescript eslint
+
+    # Create XOS directory structure
+    $dirs = @("app", "components", "stores", "shared/validation", "features", "tests/unit", "tests/e2e")
+    $dirs | ForEach-Object { New-Item -ItemType Directory -Force -Path $_ | Out-Null }
+
+    # Create basic app layout
+    @"
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
+
+export default function RootLayout() {
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryClientProvider client={queryClient}>
+        <StatusBar style="auto" />
+        <Stack screenOptions={{ headerShown: false }} />
+      </QueryClientProvider>
+    </GestureHandlerRootView>
+  );
+}
+"@ | Out-File -FilePath "app/_layout.tsx" -Encoding UTF8
+
+    Write-Host "✅ XOS project '$ProjectName' bootstrapped successfully!" -ForegroundColor Green
+    Write-Host "   cd $ProjectName && npx expo start" -ForegroundColor Gray
+}
+
+Export-ModuleMember -Function Get-XOSEnvironment, Test-XOSPrerequisites, Invoke-XOSHealthCheck

@@ -1,0 +1,51 @@
+{
+  "patterns": {
+    "expo_router_file_based": {
+      "name": "Expo Router File-Based Navigation",
+      "description": "Use file-system routing: app/(tabs)/, app/[id].tsx, etc.",
+      "convention": "Each screen is a file. Layout groups with _layout.tsx. Dynamic params with [param].tsx.",
+      "antiPatterns": ["react-navigation imperative API", "manual stack navigators"],
+      "entryPoint": "app/_layout.tsx"
+    },
+    "zustand_mmkv_persistence": {
+      "name": "Zustand + MMKV Persistence",
+      "description": "State management with Zustand, persisted through MMKV for native performance",
+      "convention": "Create stores with persist middleware, MMKV storage adapter",
+      "antiPatterns": ["AsyncStorage for perf-critical state", "Context API for global state"],
+      "pattern": "create(persist((set) => ({ ... }), { name: 'store-key', storage: mmkvStorage }))"
+    },
+    "react_query_data_fetching": {
+      "name": "React Query for Server State",
+      "description": "All API calls go through React Query. No manual useEffect + fetch.",
+      "convention": "useQuery for reads, useMutation for writes. Query keys follow [domain, entity, id].",
+      "antiPatterns": ["raw fetch in useEffect", "manual loading/error state", "caching via useState"],
+      "cacheTime": "5 minutes default, 30 minutes for reference data"
+    },
+    "zod_validation_everywhere": {
+      "name": "Zod Validation",
+      "description": "Validate at every boundary: forms, API responses, route params, storage reads",
+      "convention": "Define schemas in shared/validation/. Infer types with z.infer<>. Use in React Hook Form.",
+      "antiPatterns": ["manual type guards", "JSON.parse without validation", "any typed API responses"]
+    },
+    "nativewind_styling": {
+      "name": "NativeWind Styling",
+      "description": "All styling through Tailwind utility classes via NativeWind",
+      "convention": "Use design system token classes. No inline StyleSheet.create. Theme via tailwind.config.",
+      "antiPatterns": ["StyleSheet.create co-existing", "hardcoded hex colors", "platform-specific style branches"]
+    },
+    "flashlist_large_lists": {
+      "name": "FlashList for Scrollable Data",
+      "description": "Any list longer than ~20 items must use FlashList, not FlatList or ScrollView",
+      "convention": "estimatedItemSize must be provided. keyExtractor is required.",
+      "antiPatterns": ["FlatList for large datasets", "ScrollView wrapping map()", "missing getItemType"],
+      "performanceThreshold": 20
+    },
+    "reanimated_worklet_animations": {
+      "name": "Reanimated Worklet-Driven Animations",
+      "description": "All animations on the UI thread via Reanimated worklets. No JS-thread animations.",
+      "convention": "useSharedValue, useAnimatedStyle, runOnJS for callbacks.",
+      "antiPatterns": ["Animated API (legacy)", "LayoutAnimation", "JS-driven interpolation loops"],
+      "frameBudget": "60fps guaranteed"
+    }
+  }
+}

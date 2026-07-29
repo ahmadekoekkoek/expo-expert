@@ -1,0 +1,64 @@
+{
+  "patterns": {
+    "lightImpact": {
+      "name": "Light Impact",
+      "description": "Subtle haptic for UI interactions (buttons, toggles, selection)",
+      "intent": "acknowledgment",
+      "intensity": "light",
+      "timing": { "duration": 10 },
+      "ios": "UIImpactFeedbackGenerator.impactOccurred(.light)",
+      "android": "HapticFeedbackConstants.KEYBOARD_TAP",
+      "applications": ["buttons", "switches", "list selection"]
+    },
+    "mediumImpact": {
+      "name": "Medium Impact",
+      "description": "Moderate haptic for significant actions (pull-to-refresh, snap)",
+      "intent": "confirmation",
+      "intensity": "medium",
+      "timing": { "duration": 15 },
+      "ios": "UIImpactFeedbackGenerator.impactOccurred(.medium)",
+      "android": "HapticFeedbackConstants.LONG_PRESS",
+      "applications": ["pull-to-refresh", "snap points", "slider detents"]
+    },
+    "heavyImpact": {
+      "name": "Heavy Impact",
+      "description": "Strong haptic for major state transitions",
+      "intent": "alert",
+      "intensity": "heavy",
+      "timing": { "duration": 20 },
+      "ios": "UIImpactFeedbackGenerator.impactOccurred(.heavy)",
+      "android": "HapticFeedbackConstants.CONTEXT_CLICK",
+      "applications": ["destructive actions", "errors", "achievements"]
+    },
+    "selectionChanged": {
+      "name": "Selection Changed",
+      "description": "Continuous haptic during picker/value changes",
+      "intent": "navigation",
+      "intensity": "light",
+      "timing": { "duration": 5 },
+      "ios": "UISelectionFeedbackGenerator.selectionChanged()",
+      "android": "HapticFeedbackConstants.CLOCK_TICK",
+      "applications": ["pick wheels", "sliders", "stepper controls"]
+    },
+    "notificationSuccess": {
+      "name": "Success Notification",
+      "description": "Patterned haptic: tap-tap for success",
+      "intent": "success",
+      "intensity": "medium",
+      "timing": { "pattern": [0, 15, 50, 15] },
+      "ios": "UINotificationFeedbackGenerator.notificationOccurred(.success)",
+      "android": "HapticFeedbackConstants.CONFIRM",
+      "applications": ["form submission", "payment success", "completion"]
+    },
+    "notificationError": {
+      "name": "Error Notification",
+      "description": "Patterned haptic: tap-tap-tap for error",
+      "intent": "error",
+      "intensity": "heavy",
+      "timing": { "pattern": [0, 20, 60, 20, 120, 20] },
+      "ios": "UINotificationFeedbackGenerator.notificationOccurred(.error)",
+      "android": "HapticFeedbackConstants.REJECT",
+      "applications": ["form errors", "network failure", "validation failure"]
+    }
+  }
+}

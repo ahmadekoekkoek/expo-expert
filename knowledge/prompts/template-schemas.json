@@ -1,0 +1,57 @@
+{
+  "templates": {
+    "screen": {
+      "description": "Generate a full feature screen",
+      "schema": {
+        "screenName": "string",
+        "featureName": "string",
+        "route": "/<path>",
+        "components": ["list of component IDs"],
+        "stateManagement": "Zustand store name",
+        "dataSource": "React Query key",
+        "motion": "motion pattern name",
+        "gestures": ["gesture pattern names"],
+        "haptics": ["haptic pattern names"],
+        "accessibility": "auto-generated from component labels"
+      }
+    },
+    "component": {
+      "description": "Generate a single reusable component",
+      "schema": {
+        "componentName": "string",
+        "baseComponent": "View | Pressable | TextInput | FlashList | ...",
+        "props": {},
+        "variants": [],
+        "states": ["default", "hovered", "pressed", "focused", "disabled", "error", "loading"],
+        "motion": "motion pattern name",
+        "haptic": "haptic pattern name",
+        "accessibility": {}
+      }
+    },
+    "feature": {
+      "description": "Generate a complete feature with screens, navigation, data, and tests",
+      "schema": {
+        "featureName": "string",
+        "description": "string",
+        "screens": [],
+        "navigation": "stack | tab | modal",
+        "dataModel": "Zod schema",
+        "apiEndpoint": "tRPC procedure | REST endpoint",
+        "stateStore": "Zustand slice name",
+        "errorBoundary": true,
+        "loadingBoundary": "Suspense + skeleton"
+      }
+    },
+    "project": {
+      "description": "Scaffold a new Expo + React Native project with XOS conventions",
+      "schema": {
+        "projectName": "string",
+        "bundleId": "com.example.app",
+        "features": [],
+        "backend": "supabase | firebase | none",
+        "navigationType": "stack | tab | drawer",
+        "theme": "design-system.json reference"
+      }
+    }
+  }
+}

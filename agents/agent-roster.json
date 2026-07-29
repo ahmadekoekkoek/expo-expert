@@ -1,0 +1,143 @@
+{
+  "agents": {
+    "chief-architect": {
+      "name": "Chief Architect",
+      "mission": "Oversee architectural decisions across the entire compilation pipeline",
+      "inputs": ["specifications", "knowledge graph", "experience graph"],
+      "outputs": ["architecture validation report", "dependency graph", "violation diagnostics"],
+      "context": "Full system knowledge base",
+      "skills": ["review-architecture", "refactor-code", "generate-navigation"],
+      "tools": ["graph-engine", "experience-compiler", "knowledge-graph"],
+      "mcpAccess": ["filesystem", "git", "terminal"],
+      "validationRules": ["no circular deps", "feature isolation", "single responsibility per node"],
+      "retryStrategy": "backoff: 3 attempts, escalate to human on architecture deadlock"
+    },
+    "ux-engineer": {
+      "name": "UX Engineer",
+      "mission": "Ensure every screen and feature delivers a premium, polished user experience",
+      "inputs": ["feature specifications", "motion patterns", "gesture patterns", "haptic patterns", "a11y patterns"],
+      "outputs": ["UX review report", "interaction specification", "polish recommendations"],
+      "context": "Design system + motion/gesture/haptic/accessibility patterns",
+      "skills": ["review-ux", "review-motion", "review-gestures", "review-haptics", "review-accessibility"],
+      "tools": ["experience-graph", "motion-compiler", "gesture-compiler", "haptic-compiler", "a11y-compiler"],
+      "mcpAccess": ["figma", "playwright"],
+      "validationRules": ["all interactions defined", "no dead-ends", "haptics matched to intents", "accessible by default"],
+      "retryStrategy": "iterate until all gates pass"
+    },
+    "design-system-engineer": {
+      "name": "Design System Engineer",
+      "mission": "Maintain design token consistency and component pattern compliance",
+      "inputs": ["design-tokens", "component-patterns", "generated components"],
+      "outputs": ["design validation report", "token usage audit", "component drift report"],
+      "context": "Design system JSON + NativeWind config",
+      "skills": ["generate-component", "review-ux"],
+      "tools": ["node-factory", "code-generator"],
+      "mcpAccess": ["figma", "filesystem"],
+      "validationRules": ["no hardcoded values", "token-only colors/spacing/typography", "component pattern compliance"],
+      "retryStrategy": "auto-fix token violations, report structural issues"
+    },
+    "motion-engineer": {
+      "name": "Motion Engineer",
+      "mission": "Compile intent-driven animations with correct physics, timing, and frame budgets",
+      "inputs": ["motion specifications", "motion patterns", "screen layout"],
+      "outputs": ["Reanimated animation code", "motion validation report", "frame budget analysis"],
+      "context": "Motion patterns + Reanimated API",
+      "skills": ["generate-motion", "review-motion", "optimize-animations"],
+      "tools": ["motion-compiler", "reanimated-worklet-generator"],
+      "validationRules": ["60fps guaranteed", "interruptible", "reduced-motion fallback", "no JS-thread animations"],
+      "retryStrategy": "profile and optimize if frame budget exceeded"
+    },
+    "gesture-engineer": {
+      "name": "Gesture Engineer",
+      "mission": "Compile gesture specifications into Gesture Handler + Reanimated code with conflict resolution",
+      "inputs": ["gesture specifications", "gesture patterns", "screen hierarchy"],
+      "outputs": ["Gesture Handler code", "gesture conflict resolution map", "gesture validation report"],
+      "context": "Gesture patterns + RNGH API + Reanimated",
+      "skills": ["generate-gesture", "review-gestures"],
+      "tools": ["gesture-compiler", "gesture-conflict-resolver"],
+      "validationRules": ["no gesture conflicts", "velocity thresholds defined", "recovery paths defined", "all gestures have haptics"],
+      "retryStrategy": "re-resolve conflicts with explicit priority"
+    },
+    "haptic-engineer": {
+      "name": "Haptic Engineer",
+      "mission": "Map every interaction intent to the correct haptic feedback across iOS and Android",
+      "inputs": ["haptic specifications", "haptic patterns", "interaction map"],
+      "outputs": ["expo-haptics calls", "platform-specific haptic mapping", "haptic validation report"],
+      "context": "Haptic patterns + expo-haptics API + platform capabilities",
+      "skills": ["generate-haptics", "review-haptics"],
+      "tools": ["haptic-compiler"],
+      "validationRules": ["every interaction has haptic intent", "platform-correct mapping", "no missing haptics"],
+      "retryStrategy": "fill gaps with default light haptic"
+    },
+    "accessibility-engineer": {
+      "name": "Accessibility Engineer",
+      "mission": "Guarantee WCAG AA compliance and screen reader compatibility by default",
+      "inputs": ["a11y specifications", "a11y patterns", "component tree", "screen layout"],
+      "outputs": ["accessibility props", "focus order map", "a11y validation report", "violation fixes"],
+      "context": "A11y patterns + RN Accessibility API + platform capabilities",
+      "skills": ["generate-accessibility", "review-accessibility"],
+      "tools": ["a11y-compiler", "contrast-checker", "focus-order-resolver"],
+      "validationRules": ["labels on all interactive elements", "correct roles", "contrast AA", "reduced motion", "dynamic type"],
+      "retryStrategy": "auto-generate missing labels, report structural issues"
+    },
+    "performance-engineer": {
+      "name": "Performance Engineer",
+      "mission": "Optimize rendering, list performance, bundle size, and animation frame budget",
+      "inputs": ["generated component tree", "list specifications", "animation specifications"],
+      "outputs": ["performance report", "optimization recommendations", "FlashList migration", "memoization plan"],
+      "context": "React Native performance best practices",
+      "skills": ["review-performance", "optimize-animations"],
+      "tools": ["perf-compiler", "bundle-analyzer"],
+      "validationRules": ["FlashList for >20 items", "useMemo/useCallback where needed", "no inline functions in render", "60fps animations"],
+      "retryStrategy": "apply memoization, suggest architectural changes for major issues"
+    },
+    "react-native-engineer": {
+      "name": "React Native Engineer",
+      "mission": "Generate idiomatic, type-safe React Native + Expo code from compiled specifications",
+      "inputs": ["compiled experience graph", "component templates", "state specifications"],
+      "outputs": ["React Native component code", "TypeScript types", "navigation config"],
+      "context": "React Native + Expo + TypeScript patterns",
+      "skills": ["generate-screen", "generate-component", "generate-navigation", "refactor-code"],
+      "tools": ["code-generator", "node-factory"],
+      "mcpAccess": ["expo", "react-native", "filesystem"],
+      "validationRules": ["all Zod schemas in shared/validation", "all stores in stores/", "no any types", "imports follow barrel exports"],
+      "retryStrategy": "lint and fix"
+    },
+    "backend-engineer": {
+      "name": "Backend Engineer",
+      "mission": "Generate data access layer, API integration, and database types from specifications",
+      "inputs": ["data model specifications", "API endpoint specifications", "backend choice"],
+      "outputs": ["tRPC procedures or REST hooks", "Zod schemas", "React Query hooks"],
+      "context": "Supabase / Firebase / tRPC / REST patterns",
+      "skills": ["generate-api", "generate-data-model"],
+      "tools": ["code-generator"],
+      "mcpAccess": ["supabase", "firebase", "openapi"],
+      "validationRules": ["all inputs validated", "optimistic updates where appropriate", "error handling on every query"],
+      "retryStrategy": "retry with exponential backoff"
+    },
+    "testing-engineer": {
+      "name": "Testing Engineer",
+      "mission": "Generate comprehensive tests: unit, integration, component, and E2E",
+      "inputs": ["generated components", "interaction specifications", "data models"],
+      "outputs": ["Jest + RNTL unit tests", "component tests", "E2E Detox/Maestro specs"],
+      "context": "Testing patterns + Jest + RNTL + Detox/Maestro",
+      "skills": ["generate-tests", "review-security"],
+      "tools": ["test-generator"],
+      "mcpAccess": ["detox", "maestro", "playwright"],
+      "validationRules": [">80% coverage on business logic", "every screen has a smoke test", "every interaction has a gesture test"],
+      "retryStrategy": "fill coverage gaps"
+    },
+    "release-engineer": {
+      "name": "Release Engineer",
+      "mission": "Generate CI/CD pipelines, EAS Build configs, and deployment manifests",
+      "inputs": ["project configuration", "feature set", "target platforms"],
+      "outputs": ["eas.json", "GitHub Actions workflows", "app.json updates", "release notes"],
+      "context": "EAS Build + GitHub Actions + App Store / Play Store",
+      "skills": ["generate-documentation"],
+      "tools": ["release-generator"],
+      "mcpAccess": ["github", "expo"],
+      "validationRules": ["build config matches feature set", "all credentials configured", "submission screenshots"],
+      "retryStrategy": "validate build locally before CI"
+    }
+  }
+}

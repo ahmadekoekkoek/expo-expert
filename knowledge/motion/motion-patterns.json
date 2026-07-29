@@ -1,0 +1,72 @@
+{
+  "patterns": {
+    "fadeIn": {
+      "name": "Fade In",
+      "description": "Entrance animation: element fades and slides up into view",
+      "intent": "entrance",
+      "animation": {
+        "from": { "opacity": 0, "translateY": 20 },
+        "to": { "opacity": 1, "translateY": 0 },
+        "duration": "duration.entrance",
+        "easing": "easing.decelerate"
+      },
+      "interruptible": true,
+      "reducedMotionFallback": "static",
+      "frameBudget": 3,
+      "applications": ["list items", "cards", "modals", "screen transitions"]
+    },
+    "scaleIn": {
+      "name": "Scale In",
+      "description": "Element scales from center, used for modals and dialogs",
+      "intent": "emphasis",
+      "animation": {
+        "from": { "opacity": 0, "scale": 0.92 },
+        "to": { "opacity": 1, "scale": 1 },
+        "duration": "duration.default",
+        "easing": "easing.bounce"
+      },
+      "interruptible": true,
+      "reducedMotionFallback": "fade-only",
+      "frameBudget": 2,
+      "applications": ["dialogs", "bottom sheets", "alerts"]
+    },
+    "slideInRight": {
+      "name": "Slide In Right",
+      "description": "Element slides in from the right edge",
+      "intent": "navigation",
+      "animation": {
+        "from": { "translateX": 120 },
+        "to": { "translateX": 0 },
+        "duration": "duration.default",
+        "easing": "easing.decelerate"
+      },
+      "interruptible": true,
+      "reducedMotionFallback": "instant",
+      "frameBudget": 2,
+      "applications": ["detail screens", "sheet push"]
+    },
+    "springBounce": {
+      "name": "Spring Bounce",
+      "description": "Physics-based bounce using spring animation",
+      "intent": "feedback",
+      "animation": {
+        "from": { "scale": 1 },
+        "to": { "scale": 1.05 },
+        "duration": "duration.fast",
+        "easing": "easing.bounce",
+        "physics": { "damping": 10, "stiffness": 200, "mass": 1 }
+      },
+      "interruptible": true,
+      "frameBudget": 2,
+      "applications": ["button press", "tap targets", "icon feedback"]
+    },
+    "staggeredChildren": {
+      "name": "Staggered Children",
+      "description": "Children animate in sequence with staggered delay",
+      "intent": "entrance",
+      "delay": 60,
+      "animation": "fadeIn",
+      "applications": ["lists", "grids", "form fields"]
+    }
+  }
+}

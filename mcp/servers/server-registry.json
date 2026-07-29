@@ -1,0 +1,107 @@
+{
+  "servers": {
+    "filesystem": {
+      "name": "Filesystem MCP",
+      "description": "Read, write, list, and watch files in the project workspace",
+      "capabilities": ["read_file", "write_file", "list_directory", "watch_file", "delete_file", "move_file"],
+      "transport": "stdio",
+      "command": "python -m xos.mcp.filesystem"
+    },
+    "git": {
+      "name": "Git MCP",
+      "description": "Git operations: status, diff, commit, branch, push, pull",
+      "capabilities": ["git_status", "git_diff", "git_commit", "git_push", "git_pull", "git_branch", "git_checkout"],
+      "transport": "stdio",
+      "command": "python -m xos.mcp.git"
+    },
+    "github": {
+      "name": "GitHub MCP",
+      "description": "GitHub API: PRs, issues, actions, releases",
+      "capabilities": ["create_pr", "list_prs", "create_issue", "trigger_workflow", "get_release"],
+      "transport": "http",
+      "endpoint": "https://api.github.com",
+      "auth": "GITHUB_TOKEN"
+    },
+    "terminal": {
+      "name": "Terminal MCP",
+      "description": "Execute shell commands in the project environment",
+      "capabilities": ["execute_command", "get_output"],
+      "transport": "stdio",
+      "command": "python -m xos.mcp.terminal"
+    },
+    "expo": {
+      "name": "Expo MCP",
+      "description": "Expo CLI operations: start, build, publish, config",
+      "capabilities": ["expo_start", "expo_build", "expo_publish", "expo_config", "expo_doctor"],
+      "transport": "stdio",
+      "command": "npx expo-cli-mcp"
+    },
+    "react-native": {
+      "name": "React Native MCP",
+      "description": "React Native dev tools: metro, debug, logs, inspector",
+      "capabilities": ["metro_start", "metro_bundle", "show_logs", "open_inspector", "reload_app"],
+      "transport": "stdio",
+      "command": "npx react-native-mcp"
+    },
+    "supabase": {
+      "name": "Supabase MCP",
+      "description": "Supabase operations: auth, database, storage, edge functions",
+      "capabilities": ["list_tables", "query_data", "insert_data", "get_user", "upload_file", "invoke_function"],
+      "transport": "http",
+      "endpoint": "https://api.supabase.com",
+      "auth": "SUPABASE_ACCESS_TOKEN"
+    },
+    "figma": {
+      "name": "Figma MCP",
+      "description": "Figma design file access: frames, components, styles, tokens",
+      "capabilities": ["get_file", "get_component", "get_styles", "export_asset", "get_comments"],
+      "transport": "http",
+      "endpoint": "https://api.figma.com/v1",
+      "auth": "FIGMA_ACCESS_TOKEN"
+    },
+    "notion": {
+      "name": "Notion MCP",
+      "description": "Notion workspace: pages, databases, blocks, comments",
+      "capabilities": ["query_database", "get_page", "create_page", "update_page", "search"],
+      "transport": "http",
+      "endpoint": "https://api.notion.com/v1",
+      "auth": "NOTION_API_KEY"
+    },
+    "linear": {
+      "name": "Linear MCP",
+      "description": "Linear issue tracking: issues, projects, cycles, teams",
+      "capabilities": ["create_issue", "list_issues", "get_project", "update_issue", "search_issues"],
+      "transport": "http",
+      "endpoint": "https://api.linear.app/graphql",
+      "auth": "LINEAR_API_KEY"
+    },
+    "openapi": {
+      "name": "OpenAPI MCP",
+      "description": "Dynamic MCP from OpenAPI specs: discover and call any REST API",
+      "capabilities": ["discover_endpoints", "call_endpoint", "validate_schema"],
+      "transport": "stdio",
+      "command": "python -m xos.mcp.openapi --spec <path>"
+    },
+    "detox": {
+      "name": "Detox MCP",
+      "description": "Detox E2E testing: build, test, artifacts",
+      "capabilities": ["detox_build", "detox_test", "detox_artifacts", "detox_recorder"],
+      "transport": "stdio",
+      "command": "npx detox-mcp"
+    },
+    "maestro": {
+      "name": "Maestro MCP",
+      "description": "Maestro mobile UI testing: flows, recording, cloud runs",
+      "capabilities": ["maestro_test", "maestro_record", "maestro_cloud", "maestro_studio"],
+      "transport": "stdio",
+      "command": "maestro mcp"
+    },
+    "playwright": {
+      "name": "Playwright MCP",
+      "description": "Playwright browser automation: launch, navigate, screenshot, test",
+      "capabilities": ["launch_browser", "navigate", "screenshot", "click", "type", "assert"],
+      "transport": "stdio",
+      "command": "npx playwright-mcp"
+    }
+  }
+}

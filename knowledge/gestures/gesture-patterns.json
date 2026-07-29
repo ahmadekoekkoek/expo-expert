@@ -1,0 +1,62 @@
+{
+  "patterns": {
+    "swipeBack": {
+      "name": "Swipe Back",
+      "description": "Horizontal swipe from left edge to navigate back",
+      "gesture": "Pan",
+      "trigger": { "direction": "horizontal", "edge": "left", "threshold": 80 },
+      "priority": "high",
+      "velocity": { "min": 500, "decay": 0.997 },
+      "conflictResolution": "exclusive-left-edge",
+      "recovery": "spring-to-rest",
+      "haptic": "light-impact",
+      "applications": ["stack navigation", "detail dismiss"]
+    },
+    "pullToRefresh": {
+      "name": "Pull to Refresh",
+      "description": "Vertical pull-down gesture to refresh content",
+      "gesture": "Pan",
+      "trigger": { "direction": "down", "threshold": 80 },
+      "priority": "medium",
+      "velocity": { "min": 300 },
+      "conflictResolution": "parent-scroll-lock",
+      "recovery": "snap-back",
+      "haptic": "medium-impact",
+      "applications": ["lists", "feeds"]
+    },
+    "longPress": {
+      "name": "Long Press",
+      "description": "Press and hold to reveal contextual actions",
+      "gesture": "LongPress",
+      "trigger": { "minDurationMs": 500, "movementThreshold": 10 },
+      "priority": "low",
+      "conflictResolution": "defer-to-scroll",
+      "recovery": "cancel-on-drag",
+      "haptic": "selection",
+      "applications": ["context menus", "drag-to-reorder"]
+    },
+    "doubleTap": {
+      "name": "Double Tap",
+      "description": "Double-tap to toggle or zoom",
+      "gesture": "Tap",
+      "trigger": { "numberOfTaps": 2, "maxDelayMs": 300 },
+      "priority": "medium",
+      "conflictResolution": "delay-single-tap",
+      "recovery": "none",
+      "haptic": "light-impact",
+      "applications": ["image zoom", "like toggle"]
+    },
+    "pinchZoom": {
+      "name": "Pinch to Zoom",
+      "description": "Two-finger pinch to scale content",
+      "gesture": "Pinch",
+      "trigger": { "minScale": 0.5, "maxScale": 3.0 },
+      "priority": "high",
+      "velocity": false,
+      "conflictResolution": "parent-scroll-suspend",
+      "recovery": "clamp-to-bounds",
+      "haptic": "none",
+      "applications": ["image viewer", "map"]
+    }
+  }
+}

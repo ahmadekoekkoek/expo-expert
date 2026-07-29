@@ -1,0 +1,91 @@
+{
+  "patterns": {
+    "card": {
+      "name": "Card",
+      "description": "Elevated container with rounded corners, shadow, and optional press feedback",
+      "baseComponent": "Pressable",
+      "motion": "springBounce",
+      "haptic": "lightImpact",
+      "accessibility": { "role": "button", "labelPattern": "{title}, {description}" },
+      "nativewind": "bg-card rounded-lg p-md shadow-sm border border-border",
+      "minTouchTarget": true
+    },
+    "listItem": {
+      "name": "List Item",
+      "description": "Horizontal row with leading icon, title, subtitle, trailing accessory",
+      "baseComponent": "Pressable",
+      "motion": "fadeIn (staggered)",
+      "haptic": "lightImpact",
+      "accessibility": { "role": "button" },
+      "nativewind": "flex-row items-center px-md py-sm gap-md",
+      "minHeight": 56,
+      "separator": "hairline border-b border-border"
+    },
+    "textField": {
+      "name": "Text Field",
+      "description": "Text input with label, placeholder, validation, and error state",
+      "baseComponent": "TextInput",
+      "motion": "none",
+      "haptic": "notificationError (on validation failure)",
+      "accessibility": { "role": "none", "labelFrom": "placeholder" },
+      "nativewind": "bg-card border border-border rounded-md px-md py-sm text-body",
+      "states": ["default", "focused", "error", "disabled"],
+      "validation": "Zod schema"
+    },
+    "button": {
+      "name": "Button",
+      "description": "Tappable element with label, variants, and loading state",
+      "baseComponent": "Pressable",
+      "motion": "springBounce",
+      "haptic": "lightImpact",
+      "accessibility": { "role": "button" },
+      "nativewind": "rounded-md px-lg py-sm items-center justify-center",
+      "variants": ["primary", "secondary", "outline", "ghost", "destructive"],
+      "minTouchTarget": true,
+      "loadingSpinner": true,
+      "disabledOpacity": 0.5
+    },
+    "bottomSheet": {
+      "name": "Bottom Sheet",
+      "description": "Sheet that slides up from bottom, dismissible by swipe or backdrop tap",
+      "baseComponent": "Modal + Animated.View",
+      "motion": "scaleIn + slide spring",
+      "gesture": "swipe-down-to-dismiss",
+      "haptic": "lightImpact (on snap)",
+      "accessibility": { "role": "alert", "trapFocus": true },
+      "backdrop": "rgba(0,0,0,0.5), tappable",
+      "snapPoints": [0.25, 0.5, 0.9],
+      "reanimated": true
+    },
+    "emptyState": {
+      "name": "Empty State",
+      "description": "Centered illustration + message when a list or screen has no content",
+      "baseComponent": "View",
+      "motion": "fadeIn",
+      "accessibility": { "role": "text" },
+      "nativewind": "flex-1 items-center justify-center p-xl gap-md",
+      "illustration": "Lottie or SVG",
+      "actionButton": true
+    },
+    "toast": {
+      "name": "Toast / Snackbar",
+      "description": "Temporary notification that slides in from top/bottom and auto-dismisses",
+      "baseComponent": "Animated.View",
+      "motion": "slideIn + auto-dismiss",
+      "haptic": "notificationSuccess or notificationError",
+      "accessibility": { "role": "alert", "liveRegion": "polite" },
+      "duration": 3000,
+      "position": "top or bottom",
+      "variants": ["info", "success", "warning", "error"]
+    },
+    "skeleton": {
+      "name": "Skeleton Loader",
+      "description": "Shimmer placeholder shown while content loads",
+      "baseComponent": "Animated.View",
+      "motion": "shimmer pulse (Skia or Reanimated)",
+      "accessibility": { "role": "none", "hidden": true },
+      "nativewind": "bg-muted rounded-md overflow-hidden",
+      "variants": ["text", "circle", "rect", "card"]
+    }
+  }
+}

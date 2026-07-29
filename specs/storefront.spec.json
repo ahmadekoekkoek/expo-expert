@@ -1,0 +1,91 @@
+{
+  "name": "Storefront",
+  "version": "1.0.0",
+  "description": "E-commerce storefront with browsing, searching, product details, cart, and checkout",
+  "features": [
+    {
+      "name": "browse",
+      "description": "Product browsing and search with category filtering",
+      "screens": [
+        {
+          "name": "home",
+          "route": "/",
+          "description": "Main product feed with curated sections and search",
+          "components": ["product-card", "search-bar", "category-pills", "hero-banner"],
+          "dataSource": "useProducts, useCategories",
+          "state": "productStore",
+          "motion": {"entrance": "fadeIn", "children": "staggeredChildren"},
+          "gestures": ["pullToRefresh", "doubleTap (favorite)"],
+          "haptics": ["lightImpact (tap)", "mediumImpact (refresh)"],
+          "accessibility": {"heading": "Discover", "focusOrder": "top-to-bottom"}
+        },
+        {
+          "name": "product-detail",
+          "route": "/product/[id]",
+          "description": "Full product details with images, variants, reviews, and add-to-cart",
+          "components": ["image-gallery", "variant-picker", "review-list", "add-to-cart-button", "sticky-footer"],
+          "dataSource": "useProduct(id), useProductReviews(id)",
+          "state": "productStore, cartStore",
+          "motion": {"entrance": "slideInRight"},
+          "gestures": ["pinchZoom (gallery)", "swipeBack"],
+          "haptics": ["heavyImpact (add-to-cart)"],
+          "accessibility": {"heading": "Product name", "focusOrder": "image → details → reviews → CTA"}
+        }
+      ]
+    },
+    {
+      "name": "cart",
+      "description": "Shopping cart with quantity management, promo codes, and checkout CTA",
+      "screens": [
+        {
+          "name": "cart",
+          "route": "/cart",
+          "description": "Cart overview with line items, quantities, subtotal, and checkout",
+          "components": ["cart-item", "quantity-stepper", "promo-input", "order-summary", "checkout-button"],
+          "dataSource": "useCart()",
+          "state": "cartStore",
+          "motion": {"entrance": "fadeIn", "remove": "slide-out-to-right"},
+          "gestures": ["swipe-to-delete", "longPress (reorder)"],
+          "haptics": ["notificationError (empty cart)", "notificationSuccess (checkout available)"],
+          "accessibility": {"heading": "Shopping Cart", "focusOrder": "items → summary → CTA"}
+        }
+      ]
+    },
+    {
+      "name": "checkout",
+      "description": "Multi-step checkout: shipping, payment, review, confirmation",
+      "screens": [
+        {
+          "name": "checkout",
+          "route": "/checkout",
+          "description": "Step-by-step checkout flow with progress indicator",
+          "components": ["progress-steps", "address-form", "payment-form", "review-order", "confirmation"],
+          "dataSource": "useCheckout(), usePaymentSheet()",
+          "state": "checkoutStore",
+          "motion": {"entrance": "slideInRight", "step-transition": "crossfade"},
+          "gestures": ["swipeBack (previous step)"],
+          "haptics": ["notificationSuccess (order placed)"],
+          "accessibility": {"heading": "Checkout", "focusOrder": "step indicator → form → submit"}
+        }
+      ]
+    }
+  ],
+  "navigation": {
+    "type": "tab",
+    "tabs": [
+      {"name": "home", "icon": "home", "route": "/"},
+      {"name": "search", "icon": "search", "route": "/search"},
+      {"name": "cart", "icon": "shopping-cart", "route": "/cart"},
+      {"name": "profile", "icon": "user", "route": "/profile"}
+    ]
+  },
+  "backend": "supabase",
+  "dataModel": {
+    "entities": [
+      {"name": "Product", "fields": ["id:uuid", "name:string", "description:text", "price:number", "images:string[]", "category:string", "variants:Variant[]", "rating:number", "stock:number"]},
+      {"name": "CartItem", "fields": ["id:uuid", "productId:uuid", "quantity:number", "variantId:uuid?"]},
+      {"name": "Order", "fields": ["id:uuid", "items:OrderItem[]", "shipping:Address", "payment:PaymentInfo", "status:OrderStatus", "total:number"]}
+    ]
+  },
+  "theme": "design-system.json"
+}

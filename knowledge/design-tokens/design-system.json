@@ -1,0 +1,112 @@
+{
+  "name": "ExpoExpert Design System",
+  "version": "1.0.0",
+  "tokens": {
+    "colors": {
+      "primary": {
+        "50": "#eff6ff",
+        "100": "#dbeafe",
+        "200": "#bfdbfe",
+        "300": "#93c5fd",
+        "400": "#60a5fa",
+        "500": "#3b82f6",
+        "600": "#2563eb",
+        "700": "#1d4ed8",
+        "800": "#1e40af",
+        "900": "#1e3a8a",
+        "950": "#172554"
+      },
+      "neutral": {
+        "50": "#fafafa",
+        "100": "#f5f5f5",
+        "200": "#e5e5e5",
+        "300": "#d4d4d4",
+        "400": "#a3a3a3",
+        "500": "#737373",
+        "600": "#525252",
+        "700": "#404040",
+        "800": "#262626",
+        "900": "#171717",
+        "950": "#0a0a0a"
+      },
+      "success": "#16a34a",
+      "warning": "#d97706",
+      "error": "#dc2626",
+      "surface": {
+        "background": "#ffffff",
+        "card": "#fafafa",
+        "overlay": "rgba(0,0,0,0.5)"
+      }
+    },
+    "spacing": {
+      "xs": 4,
+      "sm": 8,
+      "md": 16,
+      "lg": 24,
+      "xl": 32,
+      "2xl": 48,
+      "3xl": 64
+    },
+    "typography": {
+      "fontFamily": {
+        "sans": "Inter",
+        "mono": "JetBrains Mono",
+        "display": "Inter Tight"
+      },
+      "scale": {
+        "caption": {"size": 12, "lineHeight": 16, "weight": "400"},
+        "body": {"size": 14, "lineHeight": 20, "weight": "400"},
+        "bodyBold": {"size": 14, "lineHeight": 20, "weight": "600"},
+        "subhead": {"size": 16, "lineHeight": 24, "weight": "500"},
+        "title": {"size": 20, "lineHeight": 28, "weight": "700"},
+        "headline": {"size": 28, "lineHeight": 36, "weight": "800"},
+        "display": {"size": 40, "lineHeight": 48, "weight": "900"}
+      }
+    },
+    "radius": {
+      "none": 0,
+      "sm": 6,
+      "md": 12,
+      "lg": 16,
+      "xl": 24,
+      "full": 9999
+    },
+    "shadows": {
+      "sm": "0 1px 3px rgba(0,0,0,0.06)",
+      "md": "0 4px 12px rgba(0,0,0,0.08)",
+      "lg": "0 12px 32px rgba(0,0,0,0.12)",
+      "xl": "0 24px 48px rgba(0,0,0,0.16)"
+    },
+    "duration": {
+      "instant": 100,
+      "fast": 200,
+      "default": 300,
+      "slow": 500,
+      "entrance": 600,
+      "exit": 400
+    },
+    "easing": {
+      "default": [0.25, 0.1, 0.25, 1.0],
+      "decelerate": [0.0, 0.0, 0.2, 1.0],
+      "accelerate": [0.4, 0.0, 1.0, 1.0],
+      "sharp": [0.4, 0.0, 0.6, 1.0],
+      "bounce": [0.34, 1.56, 0.64, 1.0],
+      "elastic": [0.68, -0.55, 0.27, 1.55]
+    }
+  },
+  "nativewind": {
+    "extends": "nativewind/preset",
+    "theme": {
+      "extend": {
+        "colors": {
+          "primary": {
+            "50": "#eff6ff",
+            "500": "#3b82f6",
+            "600": "#2563eb",
+            "700": "#1d4ed8"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,952 @@
+{
+  "name": "XOS E-Commerce Demo",
+  "nodes": {
+    "product:store": {
+      "id": "product:store",
+      "kind": "product",
+      "label": "Store App",
+      "intent": "A premium e-commerce experience built with React Native + Expo.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {},
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "feat:browse": {
+      "id": "feat:browse",
+      "kind": "feature",
+      "label": "Product Browse",
+      "intent": "Browse products with rich animations, gestures, and haptic feedback.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [
+        "product:store"
+      ],
+      "constraints": {},
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "feat:checkout": {
+      "id": "feat:checkout",
+      "kind": "feature",
+      "label": "Checkout",
+      "intent": "Fast, accessible checkout flow with confirmation haptics.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [
+        "product:store"
+      ],
+      "constraints": {},
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "feat:profile": {
+      "id": "feat:profile",
+      "kind": "feature",
+      "label": "User Profile",
+      "intent": "Profile management with gesture-driven navigation.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [
+        "product:store"
+      ],
+      "constraints": {},
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "screen:home": {
+      "id": "screen:home",
+      "kind": "screen",
+      "label": "Home",
+      "intent": "Product grid with pull-to-refresh, staggered animations, and search.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [
+        "feat:browse"
+      ],
+      "constraints": {
+        "frame_budget": 16
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "screen:product-detail": {
+      "id": "screen:product-detail",
+      "kind": "screen",
+      "label": "Product Detail",
+      "intent": "Hero animation, swipe gallery, haptic add-to-cart.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [
+        "feat:browse"
+      ],
+      "constraints": {
+        "frame_budget": 16
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "screen:cart": {
+      "id": "screen:cart",
+      "kind": "screen",
+      "label": "Cart",
+      "intent": "Swipe-to-delete, haptic confirmation, slide-up checkout sheet.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [
+        "feat:checkout"
+      ],
+      "constraints": {
+        "frame_budget": 16
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "screen:checkout": {
+      "id": "screen:checkout",
+      "kind": "screen",
+      "label": "Checkout",
+      "intent": "Multi-step checkout with progress animation and success haptics.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [
+        "feat:checkout"
+      ],
+      "constraints": {
+        "frame_budget": 16
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "screen:profile": {
+      "id": "screen:profile",
+      "kind": "screen",
+      "label": "Profile",
+      "intent": "Settings list with gesture-driven reorder and haptic toggles.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [
+        "feat:profile"
+      ],
+      "constraints": {
+        "frame_budget": 16
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "comp:product-card": {
+      "id": "comp:product-card",
+      "kind": "component",
+      "label": "ProductCard",
+      "intent": "Animated product card with press animation and haptic feedback.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [
+        "screen:home"
+      ],
+      "constraints": {},
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "comp:image-gallery": {
+      "id": "comp:image-gallery",
+      "kind": "component",
+      "label": "ImageGallery",
+      "intent": "Swipeable image gallery with pinch-to-zoom.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [
+        "screen:product-detail"
+      ],
+      "constraints": {},
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "comp:cart-item": {
+      "id": "comp:cart-item",
+      "kind": "component",
+      "label": "CartItem",
+      "intent": "Swipeable cart item with delete confirmation.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [
+        "screen:cart"
+      ],
+      "constraints": {},
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "comp:checkout-stepper": {
+      "id": "comp:checkout-stepper",
+      "kind": "component",
+      "label": "CheckoutStepper",
+      "intent": "Animated step indicator with haptic progress.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [
+        "screen:checkout"
+      ],
+      "constraints": {},
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "nav:main-tabs": {
+      "id": "nav:main-tabs",
+      "kind": "navigation",
+      "label": "Main Tab Navigator",
+      "intent": "Bottom tabs: Home, Cart, Profile.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [
+        "screen:home",
+        "screen:cart",
+        "screen:profile"
+      ],
+      "constraints": {},
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "nav:product-to-detail": {
+      "id": "nav:product-to-detail",
+      "kind": "navigation",
+      "label": "Home \u2192 Product Detail",
+      "intent": "Shared element transition from product card to detail.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [
+        "screen:home",
+        "screen:product-detail"
+      ],
+      "constraints": {},
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "motion:stagger-enter": {
+      "id": "motion:stagger-enter",
+      "kind": "motion_token",
+      "label": "Staggered Enter",
+      "intent": "Staggered fade+slide entrance for list items.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "duration_ms": 400,
+        "stagger_ms": 80,
+        "curve": "ease-out",
+        "interruptible": true,
+        "frame_budget": 8
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "motion:hero-transition": {
+      "id": "motion:hero-transition",
+      "kind": "motion_token",
+      "label": "Hero Transition",
+      "intent": "Shared element morph from card to detail hero.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "duration_ms": 350,
+        "curve": "spring",
+        "interruptible": true,
+        "frame_budget": 8
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "motion:slide-up-sheet": {
+      "id": "motion:slide-up-sheet",
+      "kind": "motion_token",
+      "label": "Slide-Up Sheet",
+      "intent": "Bottom sheet slide-up for checkout.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "duration_ms": 300,
+        "curve": "ease-out",
+        "interruptible": true,
+        "frame_budget": 8
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "motion:press-scale": {
+      "id": "motion:press-scale",
+      "kind": "motion_token",
+      "label": "Press Scale",
+      "intent": "0.97 scale on press with spring rebound.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "duration_ms": 150,
+        "curve": "spring",
+        "interruptible": true,
+        "frame_budget": 4
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "gesture:pull-refresh": {
+      "id": "gesture:pull-refresh",
+      "kind": "gesture_pattern",
+      "label": "Pull to Refresh",
+      "intent": "Vertical pull with threshold and haptic trigger.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "threshold": 80,
+        "velocity": 500,
+        "priority": 0
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "gesture:swipe-delete": {
+      "id": "gesture:swipe-delete",
+      "kind": "gesture_pattern",
+      "label": "Swipe to Delete",
+      "intent": "Horizontal swipe revealing delete action.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "threshold": 120,
+        "velocity": 300,
+        "priority": 1
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "gesture:pinch-zoom": {
+      "id": "gesture:pinch-zoom",
+      "kind": "gesture_pattern",
+      "label": "Pinch to Zoom",
+      "intent": "Two-finger pinch on product images.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "min_scale": 1,
+        "max_scale": 3,
+        "priority": 2
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "haptic:add-to-cart": {
+      "id": "haptic:add-to-cart",
+      "kind": "haptic_pattern",
+      "label": "Add to Cart",
+      "intent": "Medium impact haptic on add-to-cart tap.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "intensity": "medium",
+        "timing_ms": 50,
+        "platform": {
+          "ios": "impactMedium",
+          "android": "KEYBOARD_TAP"
+        }
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "haptic:delete-confirm": {
+      "id": "haptic:delete-confirm",
+      "kind": "haptic_pattern",
+      "label": "Delete Confirmation",
+      "intent": "Heavy notification haptic on delete.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "intensity": "heavy",
+        "timing_ms": 80,
+        "platform": {
+          "ios": "notificationError",
+          "android": "LONG_PRESS"
+        }
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "haptic:checkout-success": {
+      "id": "haptic:checkout-success",
+      "kind": "haptic_pattern",
+      "label": "Checkout Success",
+      "intent": "Success notification haptic on order complete.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "intensity": "heavy",
+        "timing_ms": 100,
+        "platform": {
+          "ios": "notificationSuccess",
+          "android": "CONFIRM"
+        }
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "haptic:toggle-switch": {
+      "id": "haptic:toggle-switch",
+      "kind": "haptic_pattern",
+      "label": "Toggle Switch",
+      "intent": "Light impact haptic on toggle.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "intensity": "light",
+        "timing_ms": 30,
+        "platform": {
+          "ios": "impactLight",
+          "android": "CLOCK_TICK"
+        }
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "a11y:product-card": {
+      "id": "a11y:product-card",
+      "kind": "accessibility_rule",
+      "label": "Product Card A11y",
+      "intent": "Semantic role=button, label=product name + price.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "role": "button",
+        "min_touch_target": 44,
+        "contrast_ratio": 4.5
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "a11y:image-gallery": {
+      "id": "a11y:image-gallery",
+      "kind": "accessibility_rule",
+      "label": "Image Gallery A11y",
+      "intent": "role=image, label=product image N of M.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "role": "image",
+        "focus_order": 1
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "a11y:checkout-form": {
+      "id": "a11y:checkout-form",
+      "kind": "accessibility_rule",
+      "label": "Checkout Form A11y",
+      "intent": "Semantic form fields with error announcements.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "role": "form",
+        "announce_errors": true
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "token:color-primary": {
+      "id": "token:color-primary",
+      "kind": "design_token",
+      "label": "Primary Color",
+      "intent": "#4F46E5 \u2014 indigo primary.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "light": "#4F46E5",
+        "dark": "#818CF8"
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "token:color-surface": {
+      "id": "token:color-surface",
+      "kind": "design_token",
+      "label": "Surface Color",
+      "intent": "Card and screen backgrounds.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "light": "#FFFFFF",
+        "dark": "#1E1E2E"
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "token:spacing-scale": {
+      "id": "token:spacing-scale",
+      "kind": "design_token",
+      "label": "Spacing Scale",
+      "intent": "4pt grid: xs=4, sm=8, md=16, lg=24, xl=32, 2xl=48.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "scale": [
+          4,
+          8,
+          16,
+          24,
+          32,
+          48
+        ]
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "token:type-scale": {
+      "id": "token:type-scale",
+      "kind": "typography_token",
+      "label": "Type Scale",
+      "intent": "caption=12, body=14, body-lg=16, h3=18, h2=24, h1=32.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "scale": {
+          "caption": 12,
+          "body": 14,
+          "body-lg": 16,
+          "h3": 18,
+          "h2": 24,
+          "h1": 32
+        }
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "state:cart": {
+      "id": "state:cart",
+      "kind": "state",
+      "label": "Cart State",
+      "intent": "Zustand store: items[], total, itemCount.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "persist": true,
+        "storage": "MMKV"
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "state:user": {
+      "id": "state:user",
+      "kind": "state",
+      "label": "User State",
+      "intent": "Zustand store: profile, preferences, auth.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "persist": true,
+        "storage": "MMKV"
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "perf:home-fps": {
+      "id": "perf:home-fps",
+      "kind": "performance_target",
+      "label": "Home Screen 60 FPS",
+      "intent": "FlashList with getItemType for product cards. 60 FPS scroll.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "target_fps": 60,
+        "max_render_ms": 16
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    },
+    "perf:bundle-size": {
+      "id": "perf:bundle-size",
+      "kind": "performance_target",
+      "label": "Bundle Budget",
+      "intent": "JS bundle < 2MB initial, lazy load screens.",
+      "inputs": [],
+      "outputs": [],
+      "dependencies": [],
+      "constraints": {
+        "max_initial_kb": 2048,
+        "lazy_routes": true
+      },
+      "validations": {},
+      "quality_gates": [],
+      "metrics": {},
+      "telemetry": {},
+      "version": "0.1.0",
+      "generated_artifacts": [],
+      "metadata": {}
+    }
+  },
+  "edges": [
+    {
+      "source": "screen:home",
+      "target": "comp:product-card",
+      "kind": "composes",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "screen:product-detail",
+      "target": "comp:image-gallery",
+      "kind": "composes",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "screen:cart",
+      "target": "comp:cart-item",
+      "kind": "composes",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "screen:checkout",
+      "target": "comp:checkout-stepper",
+      "kind": "composes",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "screen:home",
+      "target": "nav:main-tabs",
+      "kind": "navigates_to",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "screen:home",
+      "target": "nav:product-to-detail",
+      "kind": "navigates_to",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "comp:product-card",
+      "target": "motion:press-scale",
+      "kind": "animates",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "comp:product-card",
+      "target": "motion:stagger-enter",
+      "kind": "animates",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "comp:image-gallery",
+      "target": "motion:hero-transition",
+      "kind": "animates",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "comp:checkout-stepper",
+      "target": "motion:slide-up-sheet",
+      "kind": "animates",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "screen:home",
+      "target": "gesture:pull-refresh",
+      "kind": "gestures",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "comp:cart-item",
+      "target": "gesture:swipe-delete",
+      "kind": "gestures",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "comp:image-gallery",
+      "target": "gesture:pinch-zoom",
+      "kind": "gestures",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "comp:product-card",
+      "target": "haptic:add-to-cart",
+      "kind": "haptics",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "comp:cart-item",
+      "target": "haptic:delete-confirm",
+      "kind": "haptics",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "screen:checkout",
+      "target": "haptic:checkout-success",
+      "kind": "haptics",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "screen:profile",
+      "target": "haptic:toggle-switch",
+      "kind": "haptics",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "comp:product-card",
+      "target": "a11y:product-card",
+      "kind": "constrains",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "comp:image-gallery",
+      "target": "a11y:image-gallery",
+      "kind": "constrains",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "screen:checkout",
+      "target": "a11y:checkout-form",
+      "kind": "constrains",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "screen:home",
+      "target": "perf:home-fps",
+      "kind": "constrains",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "product:store",
+      "target": "perf:bundle-size",
+      "kind": "constrains",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "state:cart",
+      "target": "screen:cart",
+      "kind": "accesses",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "state:user",
+      "target": "screen:profile",
+      "kind": "accesses",
+      "weight": 1.0,
+      "metadata": {}
+    }
+  ]
+}

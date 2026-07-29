@@ -1,0 +1,139 @@
+{
+  "skills": {
+    "generate-feature": {
+      "name": "Generate Feature",
+      "description": "Generates a complete feature with screens, navigation, data access, and tests",
+      "owner": "react-native-engineer",
+      "inputs": ["feature specification (JSON)", "knowledge graph"],
+      "outputs": ["screens/*.tsx", "stores/*.ts", "validation/*.ts", "navigation config", "test files"],
+      "workflow": ["parse-spec", "resolve-dependencies", "generate-data-model", "generate-state", "generate-screens", "generate-navigation", "generate-tests", "validate-all-gates"],
+      "version": "1.0.0"
+    },
+    "generate-screen": {
+      "name": "Generate Screen",
+      "description": "Generates a single screen from a screen specification node",
+      "owner": "react-native-engineer",
+      "inputs": ["screen specification", "component tree"],
+      "outputs": ["screen component file", "component test"],
+      "workflow": ["resolve-components", "apply-motion", "apply-gestures", "apply-haptics", "apply-accessibility", "generate-code", "run-quality-gates"],
+      "version": "1.0.0"
+    },
+    "generate-component": {
+      "name": "Generate Component",
+      "description": "Generates a reusable UI component from a component pattern",
+      "owner": "design-system-engineer",
+      "inputs": ["component pattern", "design tokens", "props interface"],
+      "outputs": ["component file", "component test", "Storybook/MDX doc"],
+      "workflow": ["select-pattern", "apply-tokens", "add-motion", "add-haptic", "add-a11y", "add-variants", "generate-code", "validate-anti-slop"],
+      "version": "1.0.0"
+    },
+    "generate-navigation": {
+      "name": "Generate Navigation",
+      "description": "Generates Expo Router file-based navigation from the navigation specification",
+      "owner": "react-native-engineer",
+      "inputs": ["navigation specification", "screen list"],
+      "outputs": ["_layout.tsx files", "route files", "type-safe navigation hooks"],
+      "workflow": ["infer-layout-type", "create-route-files", "add-linking-config", "add-deep-links", "validate-routes"],
+      "version": "1.0.0"
+    },
+    "review-architecture": {
+      "name": "Review Architecture",
+      "description": "Audits the experience graph for architectural violations",
+      "owner": "chief-architect",
+      "inputs": ["experience graph", "knowledge graph"],
+      "outputs": ["architecture review report", "violation list", "fix recommendations"],
+      "workflow": ["check-circular-deps", "check-feature-isolation", "check-single-responsibility", "check-layer-boundaries", "produce-report"],
+      "version": "1.0.0"
+    },
+    "review-ux": {
+      "name": "Review UX",
+      "description": "Audits screens for UX quality: hierarchy, clarity, dead-ends, consistency",
+      "owner": "ux-engineer",
+      "inputs": ["screen specifications", "component tree", "navigation flow"],
+      "outputs": ["UX review report", "heuristic score", "improvement suggestions"],
+      "workflow": ["check-hierarchy", "check-clarity", "check-dead-ends", "check-consistency", "check-affordances", "produce-score"],
+      "version": "1.0.0"
+    },
+    "review-motion": {
+      "name": "Review Motion",
+      "description": "Audits animations for correctness, frame budget, and reduced-motion compliance",
+      "owner": "motion-engineer",
+      "inputs": ["motion specification", "animation code", "frame budget constraints"],
+      "outputs": ["motion review report", "frame time estimates", "violations"],
+      "workflow": ["check-correctness", "check-frame-budget", "check-reduced-motion", "check-interruptibility", "produce-report"],
+      "version": "1.0.0"
+    },
+    "review-gestures": {
+      "name": "Review Gestures",
+      "description": "Audits gestures for conflicts, thresholds, and recovery paths",
+      "owner": "gesture-engineer",
+      "inputs": ["gesture specification", "screen hierarchy"],
+      "outputs": ["gesture review report", "conflict map", "fix recommendations"],
+      "workflow": ["detect-conflicts", "check-thresholds", "check-recovery", "check-haptic-pairing", "produce-report"],
+      "version": "1.0.0"
+    },
+    "review-haptics": {
+      "name": "Review Haptics",
+      "description": "Audits haptic feedback for completeness and platform-correct mapping",
+      "owner": "haptic-engineer",
+      "inputs": ["interaction map", "haptic specification"],
+      "outputs": ["haptic review report", "missing haptic list", "platform mapping"],
+      "workflow": ["audit-interactions", "check-platform-mapping", "check-intensity-match", "fill-gaps", "produce-report"],
+      "version": "1.0.0"
+    },
+    "review-accessibility": {
+      "name": "Review Accessibility",
+      "description": "Audits components and screens for WCAG AA compliance",
+      "owner": "accessibility-engineer",
+      "inputs": ["component tree", "a11y specification"],
+      "outputs": ["a11y review report", "violation list", "auto-fixes"],
+      "workflow": ["check-labels", "check-roles", "check-contrast", "check-focus-order", "check-reduced-motion", "check-dynamic-type", "produce-report"],
+      "version": "1.0.0"
+    },
+    "review-performance": {
+      "name": "Review Performance",
+      "description": "Audits for render performance, list optimization, and bundle size",
+      "owner": "performance-engineer",
+      "inputs": ["component tree", "list specifications", "animation specifications"],
+      "outputs": ["performance report", "FlashList migration plan", "memoization recommendations"],
+      "workflow": ["check-flatlist-usage", "check-memoization", "check-animations-on-UI-thread", "check-bundle-size", "produce-report"],
+      "version": "1.0.0"
+    },
+    "generate-tests": {
+      "name": "Generate Tests",
+      "description": "Generates unit, integration, component, and E2E tests",
+      "owner": "testing-engineer",
+      "inputs": ["components", "interaction specifications", "data models"],
+      "outputs": ["*.test.tsx", "*.e2e.ts", "coverage report"],
+      "workflow": ["generate-unit-tests", "generate-component-tests", "generate-integration-tests", "generate-e2e-tests", "run-coverage"],
+      "version": "1.0.0"
+    },
+    "generate-documentation": {
+      "name": "Generate Documentation",
+      "description": "Generates README, component docs, API docs, and architecture decision records",
+      "owner": "documentation-engineer",
+      "inputs": ["experience graph", "generated code", "agent decisions"],
+      "outputs": ["README.md", "ADRs", "component API docs", "architecture diagrams"],
+      "workflow": ["generate-readme", "generate-adrs", "generate-component-docs", "generate-architecture-diagrams"],
+      "version": "1.0.0"
+    },
+    "refactor-code": {
+      "name": "Refactor Code",
+      "description": "Refactors generated code for maintainability, DRY, and pattern compliance",
+      "owner": "chief-architect",
+      "inputs": ["generated code", "architecture patterns"],
+      "outputs": ["refactored code", "refactor report"],
+      "workflow": ["identify-duplication", "extract-shared-code", "align-with-patterns", "validate-no-regressions"],
+      "version": "1.0.0"
+    },
+    "optimize-animations": {
+      "name": "Optimize Animations",
+      "description": "Profiles and optimizes Reanimated animations for 60fps",
+      "owner": "performance-engineer",
+      "inputs": ["animation code", "frame budget"],
+      "outputs": ["optimized animation code", "frame time report"],
+      "workflow": ["profile-animations", "identify-bottlenecks", "migrate-to-worklets", "reduce-shared-values", "verify-60fps"],
+      "version": "1.0.0"
+    }
+  }
+}
