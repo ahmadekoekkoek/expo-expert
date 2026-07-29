@@ -12,7 +12,11 @@ import uuid
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from pathlib import Path
-from typing import Any, Optional, Self
+from typing import Any, Optional
+try:
+    from typing import Self
+except ImportError:
+    from typing_extensions import Self
 
 
 class NodeType(Enum):
