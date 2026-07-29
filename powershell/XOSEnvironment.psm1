@@ -1,10 +1,12 @@
-"""
-PowerShell XOS Environment Module
-Manages local dev environment: bootstrap, health checks, diagnostics.
-"""
+#Requires -Version 5.1
 using namespace System.Management.Automation
 
-# Module manifest
+<#
+.SYNOPSIS
+PowerShell XOS Environment Module
+Manages local dev environment: bootstrap, health checks, diagnostics.
+#>
+
 $Script:ModuleRoot = $PSScriptRoot
 
 function Get-XOSEnvironment {
@@ -78,17 +80,17 @@ function Test-XOSPrerequisites {
     }
 
     if ($missing.Count -gt 0) {
-        Write-Host "❌ Missing prerequisites:" -ForegroundColor Red
+        Write-Host "[FAIL] Missing prerequisites:" -ForegroundColor Red
         $missing | ForEach-Object { Write-Host "  - $_" -ForegroundColor Red }
         return $false
     }
 
     if ($warnings.Count -gt 0) {
-        Write-Host "⚠️  Warnings:" -ForegroundColor Yellow
+        Write-Host "[WARN] Warnings:" -ForegroundColor Yellow
         $warnings | ForEach-Object { Write-Host "  - $_" -ForegroundColor Yellow }
     }
 
-    Write-Host "✅ All prerequisites met" -ForegroundColor Green
+    Write-Host "[OK] All prerequisites met" -ForegroundColor Green
     return $true
 }
 
@@ -104,53 +106,49 @@ function Invoke-XOSHealthCheck {
 
     $checks = @{}
 
-    # Check package.json
     $pkgJson = Join-Path $ProjectPath "package.json"
     if (Test-Path $pkgJson) {
-        $checks.PackageJSON = "✅ Found"
+        $checks.PackageJSON = "[OK] Found"
     } else {
-        $checks.PackageJSON = "❌ Missing — run 'xos bootstrap' first"
+        $checks.PackageJSON = "[FAIL] Missing - run 'xos bootstrap' first"
     }
 
-    # Check node_modules
     $nm = Join-Path $ProjectPath "node_modules"
     if (Test-Path $nm) {
-        $checks.NodeModules = "✅ Installed"
+        $checks.NodeModules = "[OK] Installed"
     } else {
-        $checks.NodeModules = "⚠️  Missing — run 'pnpm install'"
+        $checks.NodeModules = "[WARN] Missing - run 'pnpm install'"
     }
 
-    # Check tsconfig
     $tsconfig = Join-Path $ProjectPath "tsconfig.json"
     if (Test-Path $tsconfig) {
-        $checks.TypeScript = "✅ Configured"
+        $checks.TypeScript = "[OK] Configured"
     } else {
-        $checks.TypeScript = "⚠️  Missing"
+        $checks.TypeScript = "[WARN] Missing"
     }
 
-    # Check nativewind
     $tailwind = Join-Path $ProjectPath "tailwind.config.js"
     if (Test-Path $tailwind) {
-        $checks.NativeWind = "✅ Configured"
+        $checks.NativeWind = "[OK] Configured"
     } else {
-        $checks.NativeWind = "⚠️  Missing"
+        $checks.NativeWind = "[WARN] Missing"
     }
 
-    # Check eas.json
     $eas = Join-Path $ProjectPath "eas.json"
     if (Test-Path $eas) {
-        $checks.EASBuild = "✅ Configured"
+        $checks.EASBuild = "[OK] Configured"
     } else {
-        $checks.EASBuild = "⚠️  Missing — run 'eas build:configure'"
+        $checks.EASBuild = "[WARN] Missing - run 'eas build:configure'"
     }
 
-    Write-Host "XOS Health Check — $ProjectPath`n" -ForegroundColor Cyan
+    Write-Host "XOS Health Check - $ProjectPath" -ForegroundColor Cyan
+    Write-Host ""
     foreach ($key in $checks.Keys | Sort-Object) {
-        $color = if ($checks[$key] -match "^✅") { "Green" } else { "Yellow" }
+        $color = if ($checks[$key] -match "^\[OK\]") { "Green" } else { "Yellow" }
         Write-Host "  $key : $($checks[$key])" -ForegroundColor $color
     }
 
-    $healthy = ($checks.Values | Where-Object { $_ -match "^❌" }).Count -eq 0
+    $healthy = ($checks.Values | Where-Object { $_ -match "^\[FAIL\]" }).Count -eq 0
     return $healthy
 }
 
@@ -167,23 +165,18 @@ function Initialize-XOSProject {
         [string]$Template = "blank-typescript"
     )
 
-    Write-Host "🚀 Bootstrapping XOS project: $ProjectName" -ForegroundColor Cyan
+    Write-Host "Bootstrapping XOS project: $ProjectName" -ForegroundColor Cyan
 
-    # Create Expo project
     npx create-expo-app@latest $ProjectName --template $Template
     Set-Location $ProjectName
 
-    # Install XOS dependencies
     pnpm add expo-router expo-haptics react-native-reanimated react-native-gesture-handler @shopify/flash-list nativewind tailwindcss zustand @tanstack/react-query react-hook-form @hookform/resolvers zod react-native-mmkv
 
-    # Dev dependencies
     pnpm add -D @types/react typescript eslint
 
-    # Create XOS directory structure
     $dirs = @("app", "components", "stores", "shared/validation", "features", "tests/unit", "tests/e2e")
     $dirs | ForEach-Object { New-Item -ItemType Directory -Force -Path $_ | Out-Null }
 
-    # Create basic app layout
     @"
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -204,8 +197,8 @@ export default function RootLayout() {
 }
 "@ | Out-File -FilePath "app/_layout.tsx" -Encoding UTF8
 
-    Write-Host "✅ XOS project '$ProjectName' bootstrapped successfully!" -ForegroundColor Green
+    Write-Host "[OK] XOS project '$ProjectName' bootstrapped successfully!" -ForegroundColor Green
     Write-Host "   cd $ProjectName && npx expo start" -ForegroundColor Gray
 }
 
-Export-ModuleMember -Function Get-XOSEnvironment, Test-XOSPrerequisites, Invoke-XOSHealthCheck
+Export-ModuleMember -Function Get-XOSEnvironment, Test-XOSPrerequisites, Invoke-XOSHealthCheck, Initialize-XOSProject

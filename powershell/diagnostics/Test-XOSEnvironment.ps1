@@ -1,51 +1,59 @@
+#Requires -Version 5.1
 <#
 .SYNOPSIS
-  XOS Environment Diagnostics — validate the local machine for Expo development.
+Validates the XOS development environment.
 #>
+[CmdletBinding()]
+param([switch]$VerboseOutput)
 
-Write-Host "==> XOS Environment Diagnostics" -ForegroundColor Cyan
+$allOk = $true
 
-$checks = @()
-
-# Node
-$nodeVersion = try { & node --version 2>$null } catch { $null }
-$checks += [PSCustomObject]@{ Tool="Node.js"; Installed=[bool]$nodeVersion; Version=$nodeVersion; Status=if($nodeVersion){ "OK" }else{ "FAIL" } }
-
-# pnpm
-$pnpmVersion = try { & pnpm --version 2>$null } catch { $null }
-$checks += [PSCustomObject]@{ Tool="pnpm"; Installed=[bool]$pnpmVersion; Version=$pnpmVersion; Status=if($pnpmVersion){ "OK" }else{ "FAIL" } }
-
-# npx
-$npxOk = [bool](Get-Command npx -ErrorAction SilentlyContinue)
-$checks += [PSCustomObject]@{ Tool="npx"; Installed=$npxOk; Version="-"; Status=if($npxOk){ "OK" }else{ "FAIL" } }
-
-# Expo CLI
-$expoVersion = try { & npx expo --version 2>$null } catch { $null }
-$checks += [PSCustomObject]@{ Tool="Expo CLI"; Installed=[bool]$expoVersion; Version=$expoVersion; Status=if($expoVersion){ "OK" }else{ "WARN" } }
-
-# Java / Android SDK
-$javaHome = $env:JAVA_HOME
-$androidHome = $env:ANDROID_HOME
-$checks += [PSCustomObject]@{ Tool="JAVA_HOME"; Installed=[bool]$javaHome; Version=$javaHome; Status=if($javaHome){ "OK" }else{ "WARN" } }
-$checks += [PSCustomObject]@{ Tool="ANDROID_HOME"; Installed=[bool]$androidHome; Version=$androidHome; Status=if($androidHome){ "OK" }else{ "WARN" } }
-
-# Xcode (macOS only)
-if ($IsMacOS) {
-  $xcodeVersion = try { & xcodebuild -version 2>$null | Select-Object -First 1 } catch { $null }
-  $checks += [PSCustomObject]@{ Tool="Xcode"; Installed=[bool]$xcodeVersion; Version=$xcodeVersion; Status=if($xcodeVersion){ "OK" }else{ "FAIL" } }
+function Test-Tool {
+    param([string]$Name, [string]$Command, [string]$InstallHint, [string]$MinVersion)
+    Write-Host -NoNewline "  $Name ... "
+    try {
+        $out = Invoke-Expression $Command 2>$null
+        if ($LASTEXITCODE -eq 0 -and $out) {
+            $ver = ($out -split '\n')[0] -replace '[^0-9.]', ''
+            if ($MinVersion -and [version]$ver -lt [version]$MinVersion) {
+                Write-Host "[OLD] $ver (need >= $MinVersion)" -ForegroundColor Yellow
+                $script:allOk = $false
+            } else {
+                Write-Host "[OK] $ver" -ForegroundColor Green
+            }
+        } else {
+            Write-Host "[MISSING]" -ForegroundColor Red
+            if ($InstallHint) { Write-Host "       Install: $InstallHint" -ForegroundColor Gray }
+            $script:allOk = $false
+        }
+    } catch {
+        Write-Host "[MISSING]" -ForegroundColor Red
+        if ($InstallHint) { Write-Host "       Install: $InstallHint" -ForegroundColor Gray }
+        $script:allOk = $false
+    }
 }
 
-# Git
-$gitVersion = try { & git --version 2>$null } catch { $null }
-$checks += [PSCustomObject]@{ Tool="Git"; Installed=[bool]$gitVersion; Version=$gitVersion; Status=if($gitVersion){ "OK" }else{ "FAIL" } }
+Write-Host "XOS Environment Check" -ForegroundColor Cyan
+Write-Host "====================="
+Write-Host ""
 
-# Python
-$pyVersion = try { & python3 --version 2>$null } catch { $null }
-$checks += [PSCustomObject]@{ Tool="Python"; Installed=[bool]$pyVersion; Version=$pyVersion; Status=if($pyVersion){ "OK" }else{ "WARN" } }
+Write-Host "Required tools:" -ForegroundColor White
+Test-Tool -Name "Node.js" -Command "node --version" -InstallHint "https://nodejs.org" -MinVersion "18"
+Test-Tool -Name "pnpm" -Command "pnpm --version" -InstallHint "npm i -g pnpm" -MinVersion "8"
+Test-Tool -Name "Python" -Command "python3 --version" -InstallHint "https://python.org" -MinVersion "3.10"
+Test-Tool -Name "Git" -Command "git --version" -InstallHint "https://git-scm.com" -MinVersion "2.40"
+Test-Tool -Name "Expo CLI" -Command "npx expo --version" -InstallHint "npm i -g expo-cli"
 
-$checks | Format-Table -AutoSize
+Write-Host ""
+Write-Host "Optional tools:" -ForegroundColor White
+Test-Tool -Name "EAS CLI" -Command "npx eas --version" -InstallHint "npm i -g eas-cli"
+Test-Tool -Name "Bun" -Command "bun --version" -InstallHint "https://bun.sh"
+Test-Tool -Name "Docker" -Command "docker --version" -InstallHint "https://docker.com"
 
-$failCount = ($checks | Where-Object { $_.Status -eq "FAIL" }).Count
-$warnCount = ($checks | Where-Object { $_.Status -eq "WARN" }).Count
-
-Write-Host "`nSummary: $($checks.Count) checks — $failCount failures, $warnCount warnings" -ForegroundColor $(if($failCount -gt 0){"Red"}else{"Green"})
+Write-Host ""
+if ($allOk) {
+    Write-Host "[OK] Environment ready." -ForegroundColor Green
+} else {
+    Write-Host "[FAIL] Some tools are missing or outdated. Install them and re-run." -ForegroundColor Red
+}
+exit $(if ($allOk) { 0 } else { 1 })
