@@ -35,7 +35,7 @@ from .core.node_factory import (
     create_state_node,
     create_design_token_node,
 )
-from .core.constitution import Constitution, constitution_from_file
+from .core.constitution import Constitution
 from .core.change import ChangeManager
 from .core.clarify import ClarifyEngine
 from .core.diff import GraphDiffer

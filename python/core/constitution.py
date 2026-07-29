@@ -82,45 +82,47 @@ class Constitution:
             c.rules[rid] = rule
         return c
 
-DEFAULT_CONSTITUTION = Constitution()
-
-
-def constitution_from_file(path: str) -> "Constitution":
-    """Load a constitution from a JSON file, creating default if missing."""
-    import os, json
-    if os.path.exists(path):
-        return Constitution.from_json_file(path)
-    const = Constitution()
-    const.save(path)
-    return const
-
 
     @classmethod
     def from_json_file(cls, path: str) -> "Constitution":
+        """Load constitution from a JSON file, creating default if missing."""
         import json, os
         if os.path.exists(path):
             data = json.load(open(path))
-            rules = {}
-            for k, v in data.get("rules", {}).items():
-                rules[k] = ConstitutionalRule(
-                    id=k,
-                    description=v.get("description", ""),
-                    severity=RuleSeverity(v.get("severity", "warning")),
-                    applies_to=v.get("applies_to", []),
+            const = cls(name=data.get("name", "xos-constitution"))
+            for rid, rd in data.get("rules", {}).items():
+                rule = ConstitutionalRule(
+                    id=rid,
+                    category=rd.get("category", "general"),
+                    description=rd.get("description", ""),
+                    severity=RuleSeverity(rd.get("severity", "warning")),
+                    check=rd.get("check", ""),
+                    fix=rd.get("fix", ""),
+                    applies_to=rd.get("applies_to", ["*"]),
                 )
-            return cls(rules=rules)
+                const.rules[rid] = rule
+            return const
         const = cls()
         const.save(path)
         return const
-    
-    def save(self, path: str) -> None:
-        import json, os
-        os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
-        data = {
-            "name": "xos-constitution",
-            "rules": {
-                k: {"description": v.description, "severity": v.severity.value, "applies_to": v.applies_to}
-                for k, v in self.rules.items()
-            }
-        }
-        json.dump(data, open(path, "w"), indent=2)
+
+    def to_markdown(self) -> str:
+        """Render constitution as a markdown document."""
+        lines = [f"# Constitution: {self.name}", "", "## Rules", ""]
+        for rule in self.rules.values():
+            emoji = {"block": "🚫", "warn": "⚠️", "info": "ℹ️"}.get(rule.severity.value, "")
+            lines.append(f"### {emoji} {rule.id}: {rule.description}")
+            lines.append(f"- **Severity**: {rule.severity.value}")
+            lines.append(f"- **Category**: {rule.category}")
+            lines.append(f"- **Check**: `{rule.check}`")
+            if rule.fix:
+                lines.append(f"- **Fix**: {rule.fix}")
+            if rule.applies_to and rule.applies_to != ["*"]:
+                lines.append(f"- **Applies to**: {", ".join(rule.applies_to)}")
+            lines.append("")
+        return "\n".join(lines)
+
+
+DEFAULT_CONSTITUTION = Constitution()
+
+
