@@ -217,7 +217,6 @@ function Test-XOSEnvironment {
         param([string]$Name, [string]$Command, [string]$InstallHint, [string]$MinVersion)
         Write-Host -NoNewline "  $Name ... "
         $exe = ($Command -split " ")[0]
-        $argList = if (($Command -split " ").Length -gt 1) { ($Command -split " ")[1..99] -join " " } else { "" }
 
         $found = Get-Command $exe -ErrorAction SilentlyContinue
         if (-not $found) {
@@ -227,47 +226,19 @@ function Test-XOSEnvironment {
             return
         }
 
-        $exePath = $found.Source
-        $isShellScript = $exePath -match '\.(cmd|bat|ps1)$'
-
         try {
-            if ($isShellScript) {
-                $out = cmd /c "$exePath $argList 2>&1"
-            } else {
-                $psi = New-Object System.Diagnostics.ProcessStartInfo
-                $psi.FileName = $exePath
-                $psi.Arguments = $argList
-                $psi.UseShellExecute = $false
-                $psi.RedirectStandardOutput = $true
-                $psi.RedirectStandardError = $true
-                $psi.CreateNoWindow = $true
-                $proc = [System.Diagnostics.Process]::Start($psi)
-                $out = $proc.StandardOutput.ReadToEnd()
-                $err = $proc.StandardError.ReadToEnd()
-                $proc.WaitForExit(5000) | Out-Null
-                if (-not $out.Trim()) { $out = $err }
-            }
-
+            $out = & $exe @(($Command -split " ")[1..99]) 2>&1 | Out-String
             if ($out.Trim()) {
                 $ver = ($out -split "`n")[0] -replace "[^0-9.]", ""
-                if ($ver) {
-                    if ($MinVersion) {
-                        try {
-                            if ([version]$ver -lt [version]$MinVersion) {
-                                Write-Host "[OLD] $ver (need >= $MinVersion)" -ForegroundColor Yellow
-                                $script:allOk = $false
-                            } else {
-                                Write-Host "[OK] $ver" -ForegroundColor Green
-                            }
-                        } catch {
-                            Write-Host "[OK] $ver" -ForegroundColor Green
+                if ($ver -and $MinVersion) {
+                    try {
+                        if ([version]$ver -lt [version]$MinVersion) {
+                            Write-Host "[OLD] $ver (need >= $MinVersion)" -ForegroundColor Yellow
+                            $script:allOk = $false; return
                         }
-                    } else {
-                        Write-Host "[OK] $ver" -ForegroundColor Green
-                    }
-                } else {
-                    Write-Host "[OK]" -ForegroundColor Green
+                    } catch {}
                 }
+                Write-Host "[OK] $ver" -ForegroundColor Green
             } else {
                 Write-Host "[FOUND]" -ForegroundColor Green
             }
