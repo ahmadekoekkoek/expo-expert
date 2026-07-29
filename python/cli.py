@@ -113,10 +113,35 @@ def cmd_validate(args):
 
 def cmd_compile(args):
     graph_path = Path(args.graph) if args.graph else Path("graph/experience.json")
+    spec_path = Path(args.spec) if args.spec else None
     output_dir = Path(args.output) if args.output else Path("features")
 
+    # If --spec is provided, load specs and build/update the graph first
+    if spec_path:
+        print(f"Loading specs from: {spec_path}")
+        graph = ExperienceGraph(name="compiled")
+        spec_files = []
+        if spec_path.is_dir():
+            spec_files = sorted(spec_path.glob("*.json"))
+        elif spec_path.is_file():
+            spec_files = [spec_path]
+        if not spec_files:
+            print("[FAIL] No spec files found.")
+            sys.exit(1)
+        for sf in spec_files:
+            try:
+                spec = json.loads(sf.read_text())
+                print(f"  Loaded: {sf.name} ({spec.get('name', 'unnamed')})")
+                _load_spec_into_graph(graph, spec)
+            except json.JSONDecodeError as e:
+                print(f"  [FAIL] {sf.name}: invalid JSON — {e}")
+                sys.exit(1)
+        graph_path.parent.mkdir(parents=True, exist_ok=True)
+        graph.save(graph_path)
+        print(f"Graph saved: {graph_path} ({len(graph.nodes)} nodes, {len(graph.edges)} edges)")
+
     if not graph_path.exists():
-        print("❌ No experience graph found.")
+        print("[FAIL] No experience graph found. Run with --spec first or create one.")
         sys.exit(1)
 
     graph = ExperienceGraph.load(graph_path)
@@ -124,14 +149,74 @@ def cmd_compile(args):
     result = compiler.compile(graph, output_dir)
 
     if result.success:
-        print(f"✅ Compilation successful. Generated {len(result.generated_files)} files.")
+        print(f"[OK] Compilation successful. Generated {len(result.generated_files)} files.")
         for f in result.generated_files:
             print(f"   {f}")
     else:
-        print(f"❌ Compilation failed with {len(result.errors)} errors.")
+        print(f"[FAIL] Compilation failed with {len(result.errors)} errors.")
         for d in result.errors:
             print(f"   [{d.stage.name}] {d.message}")
         sys.exit(1)
+
+def _load_spec_into_graph(graph, spec):
+    """Convert a spec dict into graph nodes and edges."""
+    from .core.graph import GraphNode, NodeType
+    name = spec.get("name", "unnamed")
+
+    # Create feature node
+    fid = f"feat:{name}"
+    if fid not in graph.nodes:
+        graph.add_node(GraphNode(
+            id=fid, node_type=NodeType.FEATURE,
+            intent=spec.get("description", ""),
+            metadata=spec
+        ))
+    if fid not in graph.edges:
+        graph.edges[fid] = set()
+
+    # Create screen nodes from screens or features.screens arrays
+    screens = list(spec.get("screens", []))
+    for feat in spec.get("features", []):
+        screens.extend(feat.get("screens", []))
+
+    for screen in screens:
+        sid = f"screen:{screen.get('name', name)}"
+        if sid not in graph.nodes:
+            graph.add_node(GraphNode(
+                id=sid, node_type=NodeType.SCREEN,
+                intent=screen.get("description", ""),
+                constraints={"route": screen.get("route", "/")},
+                metadata=screen
+            ))
+        if sid not in graph.edges:
+            graph.edges[sid] = set()
+        graph.edges[fid].add(sid)
+
+        # Create component nodes
+        for comp_name in screen.get("components", []):
+            cid = f"comp:{comp_name}"
+            if cid not in graph.nodes:
+                graph.add_node(GraphNode(
+                    id=cid, node_type=NodeType.COMPONENT,
+                    intent=f"Component: {comp_name}"
+                ))
+            if cid not in graph.edges:
+                graph.edges[cid] = set()
+            graph.edges[sid].add(cid)
+
+    # Handle business rules
+    for rule in spec.get("business_rules", []):
+        rid = f"rule:{rule.get('id', rule.get('name', 'unnamed'))}"
+        if rid not in graph.nodes:
+            graph.add_node(GraphNode(
+                id=rid, node_type=NodeType.BUSINESS_RULE,
+                intent=rule.get("description", rule.get("rule", "")),
+                constraints={"condition": rule.get("condition", "")},
+                metadata=rule
+            ))
+        if rid not in graph.edges:
+            graph.edges[rid] = set()
+        graph.edges[fid].add(rid)
 
 
 def cmd_agent(args):
@@ -219,6 +304,7 @@ def main():
     # compile
     p_comp = sub.add_parser("compile", help="Run full compilation pipeline")
     p_comp.add_argument("--graph", help="Path to experience graph JSON")
+    p_comp.add_argument("--spec", help="Path to spec file or directory")
     p_comp.add_argument("--output", help="Output directory for generated code")
 
     # agent
