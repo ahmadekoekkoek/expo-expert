@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 
 from .core.graph import ExperienceGraph, GraphNode, NodeType, GateStatus
-from .core.compiler import ExperienceCompiler
+from .core.compiler import ExperienceCompiler, PipelineStage
 from .core.agents import AGENT_REGISTRY, AgentExecutor, AgentContext
 from .core.anti_slop import AntiSlopEngine
 from .core.knowledge import ALL_KNOWLEDGE, get_design_tokens, get_motion_tokens, get_haptic_tokens
@@ -39,7 +39,6 @@ from .core.constitution import Constitution
 from .core.change import ChangeManager
 from .core.clarify import ClarifyEngine
 from .core.diff import GraphDiffer
-
 
 def cmd_init(args):
     project_dir = Path(args.project)
@@ -85,7 +84,6 @@ def cmd_init(args):
     print(f"✅ XOS project '{args.project}' initialized.")
     print(f"   {project_dir}/")
 
-
 def cmd_validate(args):
     graph_path = Path(args.graph) if args.graph else Path("graph/experience.json")
     if not graph_path.exists():
@@ -110,7 +108,6 @@ def cmd_validate(args):
         for d in result.warnings:
             print(f"   [{d.stage.name}] {d.message}")
 
-
 def cmd_compile(args):
     graph_path = Path(args.graph) if args.graph else Path("graph/experience.json")
     spec_path = Path(args.spec) if args.spec else None
@@ -132,6 +129,8 @@ def cmd_compile(args):
             try:
                 spec = json.loads(sf.read_text())
                 print(f"  Loaded: {sf.name} ({spec.get('name', 'unnamed')})")
+                if isinstance(spec.get('features'), list) and spec['features'] and isinstance(spec['features'][0], str):
+                    continue
                 _load_spec_into_graph(graph, spec)
             except json.JSONDecodeError as e:
                 print(f"  [FAIL] {sf.name}: invalid JSON — {e}")
@@ -146,7 +145,20 @@ def cmd_compile(args):
 
     graph = ExperienceGraph.load(graph_path)
     compiler = ExperienceCompiler()
-    result = compiler.compile(graph, output_dir)
+    stage_map = {
+        "DEPENDENCY_RESOLUTION": PipelineStage.DEPENDENCY_RESOLUTION,
+        "CONSTRAINT_VALIDATION": PipelineStage.CONSTRAINT_VALIDATION,
+        "AGENT_PLANNING": PipelineStage.AGENT_PLANNING,
+        "MOTION_COMPILATION": PipelineStage.MOTION_COMPILATION,
+        "GESTURE_COMPILATION": PipelineStage.GESTURE_COMPILATION,
+        "HAPTIC_COMPILATION": PipelineStage.HAPTIC_COMPILATION,
+        "ACCESSIBILITY_COMPILATION": PipelineStage.ACCESSIBILITY_COMPILATION,
+        "PERFORMANCE_OPTIMIZATION": PipelineStage.PERFORMANCE_OPTIMIZATION,
+        "CODE_GENERATION": PipelineStage.CODE_GENERATION,
+    }
+    target = stage_map.get(args.stage) if getattr(args, 'stage', None) else None
+    stopper = stage_map.get(vars(args).get('stop_at')) if hasattr(args, 'stop_at') and args.stop_at else None
+    result = compiler.compile(graph, output_dir, target_stage=target, stop_at=stopper)
 
     if result.success:
         print(f"[OK] Compilation successful. Generated {len(result.generated_files)} files.")
@@ -204,6 +216,72 @@ def _load_spec_into_graph(graph, spec):
                 graph.edges[cid] = set()
             graph.edges[sid].add(cid)
 
+        # --- Create MOTION node from screen.motion ---
+        motion = screen.get("motion", {})
+        if motion:
+            mid = f"motion:{sid}"
+            if mid not in graph.nodes:
+                graph.add_node(GraphNode(
+                    id=mid, node_type=NodeType.MOTION,
+                    intent=f"Motion: {motion.get('entrance', 'fadeIn')}",
+                    constraints={
+                        "must_respect_reduced_motion": motion.get("reducedMotionFallback") is not None,
+                        "frame_budget_ms": motion.get("frameBudget", 12),
+                    },
+                    metadata=motion
+                ))
+            if mid not in graph.edges:
+                graph.edges[mid] = set()
+            graph.edges[sid].add(mid)
+
+        # --- Create HAPTIC nodes from screen.haptics ---
+        haptics = screen.get("haptics", [])
+        for i, h in enumerate(haptics):
+            hid = f"haptic:{sid}:{i}"
+            if hid not in graph.nodes:
+                h_name = h.split("(")[0].strip() if "(" in h else h
+                graph.add_node(GraphNode(
+                    id=hid, node_type=NodeType.HAPTIC,
+                    intent=h,
+                    metadata={"spec": h, "name": h_name}
+                ))
+            if hid not in graph.edges:
+                graph.edges[hid] = set()
+            graph.edges[sid].add(hid)
+
+        # --- Create GESTURE nodes from screen.gestures ---
+        gestures = screen.get("gestures", [])
+        for i, g in enumerate(gestures):
+            gid = f"gesture:{sid}:{i}"
+            if gid not in graph.nodes:
+                g_name = g.split("(")[0].strip() if "(" in g else g
+                graph.add_node(GraphNode(
+                    id=gid, node_type=NodeType.GESTURE,
+                    intent=g,
+                    constraints={"must_define_conflict_resolution": True},
+                    metadata={"spec": g, "name": g_name}
+                ))
+            if gid not in graph.edges:
+                graph.edges[gid] = set()
+            graph.edges[sid].add(gid)
+
+        # --- Create ACCESSIBILITY node from screen.accessibility ---
+        a11y = screen.get("accessibility", {})
+        if a11y:
+            aid = f"a11y:{sid}"
+            if aid not in graph.nodes:
+                graph.add_node(GraphNode(
+                    id=aid, node_type=NodeType.ACCESSIBILITY,
+                    intent=f"a11y: {a11y.get('heading', screen.get('name', ''))}",
+                    constraints={
+                        "min_touch_target": a11y.get("minTouchTarget", 44),
+                    },
+                    metadata=a11y
+                ))
+            if aid not in graph.edges:
+                graph.edges[aid] = set()
+            graph.edges[sid].add(aid)
+
     # Handle business rules
     for rule in spec.get("business_rules", []):
         rid = f"rule:{rule.get('id', rule.get('name', 'unnamed'))}"
@@ -217,7 +295,6 @@ def _load_spec_into_graph(graph, spec):
         if rid not in graph.edges:
             graph.edges[rid] = set()
         graph.edges[fid].add(rid)
-
 
 def cmd_agent(args):
     agent_def = AGENT_REGISTRY.get(args.name)
@@ -237,7 +314,6 @@ def cmd_agent(args):
     else:
         print(f"❌ Agent '{args.name}' failed.")
 
-
 def cmd_graph_export(args):
     graph_path = Path(args.graph) if args.graph else Path("graph/experience.json")
     if not graph_path.exists():
@@ -250,7 +326,6 @@ def cmd_graph_export(args):
     print(f"✅ Graph exported to {output}")
     print(f"   Nodes: {len(graph.nodes)}, Edges: {sum(len(e) for e in graph.edges.values())}")
 
-
 def cmd_anti_slop(args):
     engine = AntiSlopEngine()
     source = Path(args.file).read_text()
@@ -260,7 +335,6 @@ def cmd_anti_slop(args):
     if engine.has_blockers():
         print(f"🚫 Generation blocked: {engine.blocker_count()} critical issue(s).")
         sys.exit(1)
-
 
 def cmd_knowledge(args):
     if args.subcommand == "list":
@@ -285,7 +359,6 @@ def cmd_knowledge(args):
         print("\n📳 Haptic Tokens:")
         print(json.dumps(get_haptic_tokens(), indent=2))
 
-
 def main():
     parser = argparse.ArgumentParser(
         prog="xos",
@@ -306,6 +379,16 @@ def main():
     p_comp.add_argument("--graph", help="Path to experience graph JSON")
     p_comp.add_argument("--spec", help="Path to spec file or directory")
     p_comp.add_argument("--output", help="Output directory for generated code")
+    p_comp.add_argument("--stage", choices=[
+        "DEPENDENCY_RESOLUTION", "CONSTRAINT_VALIDATION", "AGENT_PLANNING",
+        "MOTION_COMPILATION", "GESTURE_COMPILATION", "HAPTIC_COMPILATION",
+        "ACCESSIBILITY_COMPILATION", "PERFORMANCE_OPTIMIZATION", "CODE_GENERATION"
+    ], help="Run a single pipeline stage")
+    p_comp.add_argument("--stop-at", choices=[
+        "DEPENDENCY_RESOLUTION", "CONSTRAINT_VALIDATION", "AGENT_PLANNING",
+        "MOTION_COMPILATION", "GESTURE_COMPILATION", "HAPTIC_COMPILATION",
+        "ACCESSIBILITY_COMPILATION", "PERFORMANCE_OPTIMIZATION", "CODE_GENERATION"
+    ], help="Run pipeline up to (and including) this stage")
 
     # agent
     p_agent = sub.add_parser("agent", help="Execute a specific agent")
@@ -354,7 +437,6 @@ def main():
     p_diff.add_argument("--before", help="Path to previous graph")
     p_diff.add_argument("--after", help="Path to current graph")
 
-
     args = parser.parse_args()
 
     if args.command == "init":
@@ -382,12 +464,8 @@ def main():
     else:
         parser.print_help()
 
-
 if __name__ == "__main__":
     main()
-
-
-
 
 def cmd_constitution(args):
     import json
