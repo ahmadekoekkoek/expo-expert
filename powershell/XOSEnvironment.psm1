@@ -227,38 +227,49 @@ function Test-XOSEnvironment {
             return
         }
 
-        try {
-            $psi = New-Object System.Diagnostics.ProcessStartInfo
-            $psi.FileName = $exe
-            $psi.Arguments = $argList
-            $psi.UseShellExecute = $false
-            $psi.RedirectStandardOutput = $true
-            $psi.RedirectStandardError = $true
-            $psi.CreateNoWindow = $true
-            $proc = [System.Diagnostics.Process]::Start($psi)
-            $out = $proc.StandardOutput.ReadToEnd()
-            $err = $proc.StandardError.ReadToEnd()
-            $proc.WaitForExit(5000) | Out-Null
+        $exePath = $found.Source
+        $isShellScript = $exePath -match '\.(cmd|bat|ps1)$'
 
-            $text = if ($out.Trim()) { $out } else { $err }
-            if ($text.Trim()) {
-                $ver = ($text -split "`n")[0] -replace "[^0-9.]", ""
-                if ($ver -and $MinVersion) {
-                    try {
-                        if ([version]$ver -lt [version]$MinVersion) {
-                            Write-Host "[OLD] $ver (need >= $MinVersion)" -ForegroundColor Yellow
-                            $script:allOk = $false
-                        } else {
+        try {
+            if ($isShellScript) {
+                $out = cmd /c "$exePath $argList 2>&1"
+            } else {
+                $psi = New-Object System.Diagnostics.ProcessStartInfo
+                $psi.FileName = $exePath
+                $psi.Arguments = $argList
+                $psi.UseShellExecute = $false
+                $psi.RedirectStandardOutput = $true
+                $psi.RedirectStandardError = $true
+                $psi.CreateNoWindow = $true
+                $proc = [System.Diagnostics.Process]::Start($psi)
+                $out = $proc.StandardOutput.ReadToEnd()
+                $err = $proc.StandardError.ReadToEnd()
+                $proc.WaitForExit(5000) | Out-Null
+                if (-not $out.Trim()) { $out = $err }
+            }
+
+            if ($out.Trim()) {
+                $ver = ($out -split "`n")[0] -replace "[^0-9.]", ""
+                if ($ver) {
+                    if ($MinVersion) {
+                        try {
+                            if ([version]$ver -lt [version]$MinVersion) {
+                                Write-Host "[OLD] $ver (need >= $MinVersion)" -ForegroundColor Yellow
+                                $script:allOk = $false
+                            } else {
+                                Write-Host "[OK] $ver" -ForegroundColor Green
+                            }
+                        } catch {
                             Write-Host "[OK] $ver" -ForegroundColor Green
                         }
-                    } catch {
+                    } else {
                         Write-Host "[OK] $ver" -ForegroundColor Green
                     }
                 } else {
-                    Write-Host "[OK] $ver" -ForegroundColor Green
+                    Write-Host "[OK]" -ForegroundColor Green
                 }
             } else {
-                Write-Host "[FOUND] (version unknown)" -ForegroundColor Green
+                Write-Host "[FOUND]" -ForegroundColor Green
             }
         } catch {
             Write-Host "[FOUND] (version check failed)" -ForegroundColor Yellow
