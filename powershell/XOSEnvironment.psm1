@@ -219,8 +219,8 @@ function Test-XOSEnvironment {
         try {
             $parts = $Command -split " "
             $exe = $parts[0]
-            $args = $parts[1..$($parts.Length - 1)] -join " "
-            $out = & $exe $args 2>&1 | Out-String
+            $rest = $parts[1..$($parts.Length - 1)]
+            $out = & $exe @rest 2>&1 | Out-String
             if ($LASTEXITCODE -eq 0 -and $out.Trim()) {
                 $ver = ($out -split "`n")[0] -replace "[^0-9.]", ""
                 if ($MinVersion -and [version]$ver -lt [version]$MinVersion) {
