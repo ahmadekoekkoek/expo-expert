@@ -216,18 +216,24 @@ function Test-XOSEnvironment {
     function Test-Tool {
         param([string]$Name, [string]$Command, [string]$InstallHint, [string]$MinVersion)
         Write-Host -NoNewline "  $Name ... "
+        $parts = $Command -split " "
+        $exe = $parts[0]
+        $rest = if ($parts.Length -gt 1) { $parts[1..($parts.Length - 1)] } else { @() }
+
+        $found = Get-Command $exe -ErrorAction SilentlyContinue
+        if (-not $found) {
+            Write-Host "[MISSING]" -ForegroundColor Red
+            if ($InstallHint) { Write-Host "       Install: $InstallHint" -ForegroundColor Gray }
+            $script:allOk = $false
+            return
+        }
+
         try {
-            $parts = $Command -split " "
-            $exe = $parts[0]
-            $args = $parts[1..$($parts.Length - 1)]
-            $tmpOut = [System.IO.Path]::GetTempFileName()
-            $tmpErr = [System.IO.Path]::GetTempFileName()
-            $proc = Start-Process -FilePath $exe -ArgumentList $args -NoNewWindow -Wait -RedirectStandardOutput $tmpOut -RedirectStandardError $tmpErr -PassThru
-            $out = Get-Content $tmpOut -Raw
-            Remove-Item $tmpOut, $tmpErr -ErrorAction SilentlyContinue
-            if ($proc.ExitCode -eq 0 -and $out.Trim()) {
-                $ver = ($out -split "`n")[0] -replace "[^0-9.]", ""
-                if ($MinVersion -and [version]$ver -lt [version]$MinVersion) {
+            $out = & $exe @rest 2>&1 | Out-String
+            if ($out.Trim()) {
+                $ver = ($out -split "
+")[0] -replace "[^0-9.]", ""
+                if ($MinVersion -and $ver -and [version]$ver -lt [version]$MinVersion) {
                     Write-Host "[OLD] $ver (need >= $MinVersion)" -ForegroundColor Yellow
                     $script:allOk = $false
                 } else {
