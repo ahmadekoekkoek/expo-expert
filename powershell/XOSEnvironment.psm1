@@ -217,6 +217,8 @@ function Test-XOSEnvironment {
         param([string]$Name, [string]$Command, [string]$InstallHint, [string]$MinVersion)
         Write-Host -NoNewline "  $Name ... "
         $exe = ($Command -split " ")[0]
+        $argList = if (($Command -split " ").Length -gt 1) { ($Command -split " ")[1..99] -join " " } else { "" }
+
         $found = Get-Command $exe -ErrorAction SilentlyContinue
         if (-not $found) {
             Write-Host "[MISSING]" -ForegroundColor Red
@@ -224,13 +226,34 @@ function Test-XOSEnvironment {
             $script:allOk = $false
             return
         }
+
         try {
-            $out = cmd /c "$Command 2>&1"
-            if ($out.Trim()) {
-                $ver = ($out -split "`n")[0] -replace "[^0-9.]", ""
-                if ($MinVersion -and $ver -and [version]$ver -lt [version]$MinVersion) {
-                    Write-Host "[OLD] $ver (need >= $MinVersion)" -ForegroundColor Yellow
-                    $script:allOk = $false
+            $psi = New-Object System.Diagnostics.ProcessStartInfo
+            $psi.FileName = $exe
+            $psi.Arguments = $argList
+            $psi.UseShellExecute = $false
+            $psi.RedirectStandardOutput = $true
+            $psi.RedirectStandardError = $true
+            $psi.CreateNoWindow = $true
+            $proc = [System.Diagnostics.Process]::Start($psi)
+            $out = $proc.StandardOutput.ReadToEnd()
+            $err = $proc.StandardError.ReadToEnd()
+            $proc.WaitForExit(5000) | Out-Null
+
+            $text = if ($out.Trim()) { $out } else { $err }
+            if ($text.Trim()) {
+                $ver = ($text -split "`n")[0] -replace "[^0-9.]", ""
+                if ($ver -and $MinVersion) {
+                    try {
+                        if ([version]$ver -lt [version]$MinVersion) {
+                            Write-Host "[OLD] $ver (need >= $MinVersion)" -ForegroundColor Yellow
+                            $script:allOk = $false
+                        } else {
+                            Write-Host "[OK] $ver" -ForegroundColor Green
+                        }
+                    } catch {
+                        Write-Host "[OK] $ver" -ForegroundColor Green
+                    }
                 } else {
                     Write-Host "[OK] $ver" -ForegroundColor Green
                 }
