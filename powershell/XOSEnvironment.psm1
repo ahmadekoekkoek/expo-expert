@@ -217,7 +217,7 @@ function Test-XOSEnvironment {
         param([string]$Name, [string]$Command, [string]$InstallHint, [string]$MinVersion)
         Write-Host -NoNewline "  $Name ... "
         try {
-            $out = Invoke-Expression $Command 2>$null
+            $out = & cmd /c "$Command 2>&1" 2>$null
             if ($LASTEXITCODE -eq 0 -and $out) {
                 $ver = ($out -split "`n")[0] -replace "[^0-9.]", ""
                 if ($MinVersion -and [version]$ver -lt [version]$MinVersion) {
