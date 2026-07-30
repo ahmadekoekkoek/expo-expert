@@ -32,9 +32,10 @@ EXPO_PACKAGE_JSON_TEMPLATE = {
         "submit:ios": "eas submit --platform ios",
     },
     "dependencies": {
-        "expo": "~52.0.0",
+        "expo": "~57.0.0",
         "expo-router": "~4.0.0",
         "expo-haptics": "~14.0.0",
+        "expo-asset": "~11.0.0",
         "expo-status-bar": "~2.0.0",
         "expo-splash-screen": "~0.29.0",
         "expo-font": "~13.0.0",
@@ -43,6 +44,7 @@ EXPO_PACKAGE_JSON_TEMPLATE = {
         "react": "18.3.1",
         "react-dom": "18.3.1",
         "react-native": "0.76.5",
+        "react-native-web": "~0.19.13",
         "react-native-reanimated": "~3.16.0",
         "react-native-gesture-handler": "~2.20.0",
         "react-native-safe-area-context": "4.12.0",
@@ -102,9 +104,7 @@ APP_JSON_TEMPLATE = {
             "package": "com.xos.app"
         },
         "plugins": [
-            "expo-router",
-            "expo-haptics",
-            "expo-font"
+            "expo-router"
         ],
         "experiments": {
             "typedRoutes": True

@@ -34,11 +34,14 @@ from .core.node_factory import (
     create_navigation_node,
     create_state_node,
     create_design_token_node,
+    load_spec_into_graph,
 )
 from .core.constitution import Constitution
 from .core.change import ChangeManager
 from .core.clarify import ClarifyEngine
 from .core.diff import GraphDiffer
+from .core.evaluator import QualityEvaluator
+from .core.iterator import AutonomousIterator
 from .project_builder import ProjectBuilder
 
 def cmd_init(args):
@@ -132,7 +135,7 @@ def cmd_compile(args):
                 print(f"  Loaded: {sf.name} ({spec.get('name', 'unnamed')})")
                 if isinstance(spec.get('features'), list) and spec['features'] and isinstance(spec['features'][0], str):
                     continue
-                _load_spec_into_graph(graph, spec)
+                load_spec_into_graph(graph, spec)
             except json.JSONDecodeError as e:
                 print(f"  [FAIL] {sf.name}: invalid JSON — {e}")
                 sys.exit(1)
@@ -492,6 +495,21 @@ def main():
     p_build.add_argument("--output", default="build", help="Output directory for the Expo project")
     p_build.add_argument("--name", help="App name (default: xos-app)")
 
+    # score
+    p_score = sub.add_parser("score", help="Score product specs and compiled graph (0-100 scale)")
+    p_score.add_argument("--spec", help="Path to spec file or directory")
+    p_score.add_argument("--graph", help="Path to experience graph JSON")
+    p_score.add_argument("--output", help="Output directory for compiled artifacts")
+    p_score.add_argument("--target", type=float, default=95.0, help="Target threshold score (default: 95.0)")
+
+    # iterate
+    p_iterate = sub.add_parser("iterate", help="Run autonomous self-healing compilation loop")
+    p_iterate.add_argument("--spec", help="Path to spec file or directory")
+    p_iterate.add_argument("--graph", help="Path to experience graph JSON")
+    p_iterate.add_argument("--output", help="Output directory for compiled artifacts")
+    p_iterate.add_argument("--target-score", type=float, default=95.0, help="Target threshold score (default: 95.0)")
+    p_iterate.add_argument("--max-iterations", type=int, default=5, help="Maximum iteration passes (default: 5)")
+
 
     args = parser.parse_args()
 
@@ -519,11 +537,12 @@ def main():
         cmd_build(args)
     elif args.command == "diff":
         cmd_diff(args)
+    elif args.command == "score":
+        cmd_score(args)
+    elif args.command == "iterate":
+        cmd_iterate(args)
     else:
         parser.print_help()
-
-if __name__ == "__main__":
-    main()
 
 def cmd_constitution(args):
     import json
@@ -595,3 +614,49 @@ def cmd_diff(args):
     new_path = getattr(args, "new", "")
     print(f"Diff: {old_path} vs {new_path or 'current'}")
     print("Ready to diff. Implement full GraphDiffer integration here.")
+
+def cmd_score(args):
+    spec_path = Path(args.spec) if getattr(args, "spec", None) else Path("specs")
+    graph_path = Path(args.graph) if getattr(args, "graph", None) else Path("graph/experience.json")
+    output_dir = Path(args.output) if getattr(args, "output", None) else Path("features")
+    target = getattr(args, "target", 95.0)
+
+    graph = ExperienceGraph.load(graph_path) if graph_path.exists() else ExperienceGraph(name="score")
+
+    spec_dicts = []
+    if spec_path.exists():
+        files = sorted(list(spec_path.glob("*.json")) if spec_path.is_dir() else [spec_path])
+        for f in files:
+            try:
+                spec_dicts.append(json.loads(f.read_text(encoding="utf-8")))
+            except Exception:
+                pass
+        for sd in spec_dicts:
+            load_spec_into_graph(graph, sd)
+
+    gen_files = list(output_dir.rglob("*.*")) if output_dir.exists() else []
+
+    evaluator = QualityEvaluator(target_score=target)
+    scorecard = evaluator.evaluate(graph=graph, generated_files=gen_files, spec_dicts=spec_dicts)
+
+    print(scorecard.summary())
+    if not scorecard.passed_threshold:
+        sys.exit(1)
+
+def cmd_iterate(args):
+    spec_path = Path(args.spec) if getattr(args, "spec", None) else Path("specs")
+    graph_path = Path(args.graph) if getattr(args, "graph", None) else Path("graph/experience.json")
+    output_dir = Path(args.output) if getattr(args, "output", None) else Path("features")
+    target = getattr(args, "target_score", 95.0)
+    max_iter = getattr(args, "max_iterations", 5)
+
+    print(f"[START] Launching Autonomous Iteration Loop (Target Score: {target}, Max Iterations: {max_iter})...")
+    iterator = AutonomousIterator(target_score=target, max_iterations=max_iter, output_dir=output_dir)
+    summary = iterator.iterate_from_specs(spec_path=spec_path, graph_path=graph_path)
+
+    print(summary.report())
+    if not summary.success:
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
