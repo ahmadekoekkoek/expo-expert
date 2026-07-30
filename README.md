@@ -14,6 +14,10 @@ PRD / App Concept  →  Spec files (JSON)  →  xos compile  →  Generated app 
 
 [📖 Full Quickstart Guide →](docs/QUICKSTART.md)
 
+## Full workflow
+
+
+
 ## Quick commands
 
 ```bash
@@ -22,6 +26,7 @@ xos compile --spec specs/   # Full pipeline: specs → graph → code
 xos validate                # Run quality gates without generating code
 xos compile --stage MOTION_COMPILATION   # Only animations
 xos compile --stop-at CONSTRAINT_VALIDATION  # Stop early for debugging
+xos build --graph graph/experience.json --output MyApp  # Scaffold Expo project
 ```
 
 ## Philosophy
