@@ -315,7 +315,7 @@ class ExperienceCompiler:
                 safe_id = node_id.replace(":", "-")
                 ext = ".tsx" if kind != "accessibility" else ".ts"
                 path = folder / f"{safe_id}{ext}"
-                path.write_text(code)
+                path.write_text(code, encoding="utf-8")
                 self.generated_files.append(path)
                 total += 1
 
