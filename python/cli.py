@@ -145,6 +145,22 @@ def cmd_compile(args):
 
     graph = ExperienceGraph.load(graph_path)
     compiler = ExperienceCompiler()
+    STAGE_ALIASES = {
+        "dep": "DEPENDENCY_RESOLUTION",
+        "dep_res": "DEPENDENCY_RESOLUTION",
+        "constraint": "CONSTRAINT_VALIDATION",
+        "validate": "CONSTRAINT_VALIDATION",
+        "agent": "AGENT_PLANNING",
+        "motion": "MOTION_COMPILATION",
+        "gesture": "GESTURE_COMPILATION",
+        "haptic": "HAPTIC_COMPILATION",
+        "a11y": "ACCESSIBILITY_COMPILATION",
+        "screen": "SCREEN_COMPILATION",
+        "screens": "SCREEN_COMPILATION",
+        "perf": "PERFORMANCE_OPTIMIZATION",
+        "code": "CODE_GENERATION",
+        "write": "CODE_GENERATION",
+    }
     stage_map = {
         "DEPENDENCY_RESOLUTION": PipelineStage.DEPENDENCY_RESOLUTION,
         "CONSTRAINT_VALIDATION": PipelineStage.CONSTRAINT_VALIDATION,
@@ -153,11 +169,18 @@ def cmd_compile(args):
         "GESTURE_COMPILATION": PipelineStage.GESTURE_COMPILATION,
         "HAPTIC_COMPILATION": PipelineStage.HAPTIC_COMPILATION,
         "ACCESSIBILITY_COMPILATION": PipelineStage.ACCESSIBILITY_COMPILATION,
+        "SCREEN_COMPILATION": PipelineStage.SCREEN_COMPILATION,
         "PERFORMANCE_OPTIMIZATION": PipelineStage.PERFORMANCE_OPTIMIZATION,
         "CODE_GENERATION": PipelineStage.CODE_GENERATION,
     }
-    target = stage_map.get(args.stage) if getattr(args, 'stage', None) else None
-    stopper = stage_map.get(vars(args).get('stop_at')) if hasattr(args, 'stop_at') and args.stop_at else None
+    stage_name = getattr(args, 'stage', None)
+    if stage_name in STAGE_ALIASES:
+        stage_name = STAGE_ALIASES[stage_name]
+    target = stage_map.get(stage_name) if stage_name else None
+    stop_name = vars(args).get('stop_at') if hasattr(args, 'stop_at') else None
+    if stop_name in STAGE_ALIASES:
+        stop_name = STAGE_ALIASES[stop_name]
+    stopper = stage_map.get(stop_name) if stop_name else None
     result = compiler.compile(graph, output_dir, target_stage=target, stop_at=stopper)
 
     if result.success:
@@ -225,8 +248,8 @@ def _load_spec_into_graph(graph, spec):
                     id=mid, node_type=NodeType.MOTION,
                     intent=f"Motion: {motion.get('entrance', 'fadeIn')}",
                     constraints={
-                        "must_respect_reduced_motion": motion.get("reducedMotionFallback") is not None,
-                        "frame_budget_ms": motion.get("frameBudget", 12),
+                        "must_respect_reduced_motion": True,
+                        "frame_budget_ms": motion.get("frameBudget", 16),
                     },
                     metadata=motion
                 ))
@@ -382,12 +405,14 @@ def main():
     p_comp.add_argument("--stage", choices=[
         "DEPENDENCY_RESOLUTION", "CONSTRAINT_VALIDATION", "AGENT_PLANNING",
         "MOTION_COMPILATION", "GESTURE_COMPILATION", "HAPTIC_COMPILATION",
-        "ACCESSIBILITY_COMPILATION", "PERFORMANCE_OPTIMIZATION", "CODE_GENERATION"
+        "ACCESSIBILITY_COMPILATION", "SCREEN_COMPILATION",
+        "PERFORMANCE_OPTIMIZATION", "CODE_GENERATION"
     ], help="Run a single pipeline stage")
     p_comp.add_argument("--stop-at", choices=[
         "DEPENDENCY_RESOLUTION", "CONSTRAINT_VALIDATION", "AGENT_PLANNING",
         "MOTION_COMPILATION", "GESTURE_COMPILATION", "HAPTIC_COMPILATION",
-        "ACCESSIBILITY_COMPILATION", "PERFORMANCE_OPTIMIZATION", "CODE_GENERATION"
+        "ACCESSIBILITY_COMPILATION", "SCREEN_COMPILATION",
+        "PERFORMANCE_OPTIMIZATION", "CODE_GENERATION"
     ], help="Run pipeline up to (and including) this stage")
 
     # agent

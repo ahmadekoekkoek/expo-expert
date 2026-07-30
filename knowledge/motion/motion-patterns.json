@@ -1,72 +1,204 @@
 {
   "patterns": {
-    "fadeIn": {
+    "fade_in": {
       "name": "Fade In",
-      "description": "Entrance animation: element fades and slides up into view",
-      "intent": "entrance",
+      "intent": "Subtle reveal \u2014 content appears without distraction.",
       "animation": {
-        "from": { "opacity": 0, "translateY": 20 },
-        "to": { "opacity": 1, "translateY": 0 },
-        "duration": "duration.entrance",
-        "easing": "easing.decelerate"
+        "easing": "easing.default",
+        "duration": "duration.default",
+        "from": {
+          "opacity": 0
+        },
+        "to": {
+          "opacity": 1
+        }
       },
-      "interruptible": true,
-      "reducedMotionFallback": "static",
       "frameBudget": 3,
-      "applications": ["list items", "cards", "modals", "screen transitions"]
-    },
-    "scaleIn": {
-      "name": "Scale In",
-      "description": "Element scales from center, used for modals and dialogs",
-      "intent": "emphasis",
-      "animation": {
-        "from": { "opacity": 0, "scale": 0.92 },
-        "to": { "opacity": 1, "scale": 1 },
-        "duration": "duration.default",
-        "easing": "easing.bounce"
-      },
       "interruptible": true,
-      "reducedMotionFallback": "fade-only",
-      "frameBudget": 2,
-      "applications": ["dialogs", "bottom sheets", "alerts"]
+      "reducedMotionFallback": "FadeIn.duration(100)"
     },
-    "slideInRight": {
+    "slide_up": {
+      "name": "Slide Up",
+      "intent": "Content rises into view \u2014 onboarding, modals.",
+      "animation": {
+        "easing": "easing.decelerate",
+        "duration": "duration.entrance",
+        "from": {
+          "opacity": 0,
+          "translateY": 32
+        },
+        "to": {
+          "opacity": 1,
+          "translateY": 0
+        }
+      },
+      "frameBudget": 4,
+      "interruptible": true,
+      "reducedMotionFallback": "FadeIn.duration(300)"
+    },
+    "slide_in_right": {
       "name": "Slide In Right",
-      "description": "Element slides in from the right edge",
-      "intent": "navigation",
+      "intent": "Screen transitions, card entrances.",
       "animation": {
-        "from": { "translateX": 120 },
-        "to": { "translateX": 0 },
+        "easing": "easing.decelerate",
         "duration": "duration.default",
-        "easing": "easing.decelerate"
+        "from": {
+          "opacity": 0,
+          "translateX": 24
+        },
+        "to": {
+          "opacity": 1,
+          "translateX": 0
+        }
       },
+      "frameBudget": 3,
       "interruptible": true,
-      "reducedMotionFallback": "instant",
-      "frameBudget": 2,
-      "applications": ["detail screens", "sheet push"]
+      "reducedMotionFallback": "FadeIn.duration(200)"
     },
-    "springBounce": {
-      "name": "Spring Bounce",
-      "description": "Physics-based bounce using spring animation",
-      "intent": "feedback",
-      "animation": {
-        "from": { "scale": 1 },
-        "to": { "scale": 1.05 },
-        "duration": "duration.fast",
-        "easing": "easing.bounce",
-        "physics": { "damping": 10, "stiffness": 200, "mass": 1 }
-      },
-      "interruptible": true,
-      "frameBudget": 2,
-      "applications": ["button press", "tap targets", "icon feedback"]
-    },
-    "staggeredChildren": {
+    "staggered_children": {
       "name": "Staggered Children",
-      "description": "Children animate in sequence with staggered delay",
-      "intent": "entrance",
-      "delay": 60,
-      "animation": "fadeIn",
-      "applications": ["lists", "grids", "form fields"]
+      "intent": "Cascading list entrance.",
+      "animation": {
+        "easing": "easing.decelerate",
+        "duration": "duration.fast",
+        "from": {
+          "opacity": 0,
+          "translateY": 8
+        },
+        "to": {
+          "opacity": 1,
+          "translateY": 0
+        }
+      },
+      "frameBudget": 2,
+      "interruptible": true,
+      "reducedMotionFallback": "FadeIn.duration(100)",
+      "staggerDelay": 60
+    },
+    "noor_bloom": {
+      "name": "Noor Bloom",
+      "intent": "Light radiates \u2014 completion of worship. Qur'an 24:35.",
+      "animation": {
+        "easing": "easing.decelerate",
+        "duration": "duration.entrance",
+        "from": {
+          "opacity": 0.3,
+          "scale": 0.92
+        },
+        "to": {
+          "opacity": 1,
+          "scale": 1
+        },
+        "physics": {
+          "damping": 14,
+          "stiffness": 100,
+          "mass": 0.8
+        }
+      },
+      "frameBudget": 6,
+      "interruptible": false,
+      "reducedMotionFallback": "FadeIn.duration(400)"
+    },
+    "sakeenah_settle": {
+      "name": "Sakeenah Settle",
+      "intent": "Tranquility descends \u2014 completion yields calm. Surah 48:4.",
+      "animation": {
+        "easing": "easing.decelerate",
+        "duration": "duration.entrance",
+        "from": {
+          "opacity": 0,
+          "translateY": -12
+        },
+        "to": {
+          "opacity": 1,
+          "translateY": 0
+        },
+        "physics": {
+          "damping": 18,
+          "stiffness": 60,
+          "mass": 1.2
+        }
+      },
+      "frameBudget": 5,
+      "interruptible": false,
+      "reducedMotionFallback": "FadeIn.duration(400)"
+    },
+    "growth_frame": {
+      "name": "Growth Frame",
+      "intent": "The good tree, rooted firm. Qur'an 14:24-25.",
+      "animation": {
+        "easing": "easing.decelerate",
+        "duration": "duration.entrance",
+        "from": {
+          "opacity": 0,
+          "scale": 0.85,
+          "translateY": 16
+        },
+        "to": {
+          "opacity": 1,
+          "scale": 1,
+          "translateY": 0
+        },
+        "physics": {
+          "damping": 12,
+          "stiffness": 120,
+          "mass": 0.6
+        }
+      },
+      "frameBudget": 6,
+      "interruptible": true,
+      "reducedMotionFallback": "FadeIn.duration(400)"
+    },
+    "crossfade": {
+      "name": "Crossfade",
+      "intent": "Smooth dissolve \u2014 page turns, tab switches.",
+      "animation": {
+        "easing": "easing.default",
+        "duration": "duration.fast",
+        "from": {
+          "opacity": 0
+        },
+        "to": {
+          "opacity": 1
+        }
+      },
+      "frameBudget": 2,
+      "interruptible": true,
+      "reducedMotionFallback": "FadeIn.duration(100)"
+    },
+    "press_scale": {
+      "name": "Press Scale",
+      "intent": "Button press \u2014 2% scale reduction.",
+      "animation": {
+        "easing": "easing.accelerate",
+        "duration": "duration.instant",
+        "from": {
+          "scale": 1
+        },
+        "to": {
+          "scale": 0.98
+        }
+      },
+      "frameBudget": 1,
+      "interruptible": true,
+      "reducedMotionFallback": "none"
+    },
+    "shared_element_expand": {
+      "name": "Shared Element Expand",
+      "intent": "Drill-in transition \u2014 list item to detail.",
+      "animation": {
+        "easing": "easing.decelerate",
+        "duration": "duration.default",
+        "from": {
+          "opacity": 0
+        },
+        "to": {
+          "opacity": 1
+        }
+      },
+      "frameBudget": 3,
+      "interruptible": true,
+      "reducedMotionFallback": "FadeIn.duration(200)"
     }
   }
 }

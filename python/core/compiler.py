@@ -27,6 +27,7 @@ class PipelineStage(Enum):
     GESTURE_COMPILATION = auto()
     HAPTIC_COMPILATION = auto()
     ACCESSIBILITY_COMPILATION = auto()
+    SCREEN_COMPILATION = auto()
     PERFORMANCE_OPTIMIZATION = auto()
     CODE_GENERATION = auto()
 
@@ -98,7 +99,7 @@ class ExperienceCompiler:
         self.graph = graph
         self.diagnostics = []
         self.generated_files = []
-        self._artifacts = {"motion": [], "gesture": [], "haptic": [], "accessibility": []}
+        self._artifacts = {"motion": [], "gesture": [], "haptic": [], "accessibility": [], "screens": []}
 
         def _maybe_run(stage, fn):
             if target_stage is not None and stage != target_stage:
@@ -116,6 +117,7 @@ class ExperienceCompiler:
             _maybe_run(PipelineStage.GESTURE_COMPILATION, self._stage_gesture_compilation)
             _maybe_run(PipelineStage.HAPTIC_COMPILATION, self._stage_haptic_compilation)
             _maybe_run(PipelineStage.ACCESSIBILITY_COMPILATION, self._stage_accessibility_compilation)
+            _maybe_run(PipelineStage.SCREEN_COMPILATION, self._stage_screen_compilation)
             _maybe_run(PipelineStage.PERFORMANCE_OPTIMIZATION, self._stage_performance_optimization)
             _maybe_run(PipelineStage.CODE_GENERATION, lambda: self._stage_write_output(output_dir))
         except _StopAfter:
@@ -256,6 +258,37 @@ class ExperienceCompiler:
         self._info(PipelineStage.ACCESSIBILITY_COMPILATION,
                    f"Compiled {compiled}/{len(a11y_nodes)} accessibility definitions.")
 
+
+    def _stage_screen_compilation(self) -> None:
+        """Compose screen-level React Native components from constituent artifacts."""
+        import sys
+        sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+        from generators.screen.screen_compiler import compile_screen
+
+        screen_nodes = self.graph.find_by_type(NodeType.SCREEN)
+        compiled = 0
+        for node in screen_nodes:
+            try:
+                code = compile_screen(
+                    screen_id=node.id,
+                    screen_meta=node.metadata,
+                    artifacts=self._artifacts,
+                    all_nodes=self.graph.nodes,
+                    edges=self.graph.edges,
+                )
+                self._artifacts["screens"].append((node.id, code))
+                compiled += 1
+            except Exception as e:
+                self._warning(
+                    PipelineStage.SCREEN_COMPILATION,
+                    f"Failed to compile screen {node.id}: {e}",
+                    node.id,
+                )
+        self._info(
+            PipelineStage.SCREEN_COMPILATION,
+            f"Compiled {compiled}/{len(screen_nodes)} screens."
+        )
+
     def _stage_performance_optimization(self) -> None:
         self._info(PipelineStage.PERFORMANCE_OPTIMIZATION,
                    "Running performance optimization passes.")
@@ -270,6 +303,7 @@ class ExperienceCompiler:
             "gesture": base / "gestures",
             "haptic": base / "haptics",
             "accessibility": base / "accessibility",
+            "screens": base / "screens",
         }
         for d in folders.values():
             d.mkdir(parents=True, exist_ok=True)
