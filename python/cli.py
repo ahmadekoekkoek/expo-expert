@@ -39,6 +39,7 @@ from .core.constitution import Constitution
 from .core.change import ChangeManager
 from .core.clarify import ClarifyEngine
 from .core.diff import GraphDiffer
+from .project_builder import ProjectBuilder
 
 def cmd_init(args):
     project_dir = Path(args.project)
@@ -192,6 +193,29 @@ def cmd_compile(args):
         for d in result.errors:
             print(f"   [{d.stage.name}] {d.message}")
         sys.exit(1)
+
+
+def cmd_build(args):
+    """Scaffold a runnable Expo project from compiled artifacts."""
+    output_dir = Path(args.output) if args.output else Path("build")
+    graph_path = Path(args.graph) if args.graph else Path("graph/experience.json")
+
+    if not graph_path.exists():
+        print("[FAIL] No experience graph found. Run 'xos compile --spec specs/' first.")
+        sys.exit(1)
+
+    # Ensure features/ exist
+    features_dir = Path("features")
+    if not features_dir.exists() or not list(features_dir.rglob("*.tsx")):
+        print("[WARN] No compiled features found. Run 'xos compile --spec specs/' first.")
+        print("       Proceeding with scaffold only...")
+
+    print(f"Scaffolding Expo project → {output_dir}/")
+    builder = ProjectBuilder(output_dir=output_dir, app_name=args.name or "xos-app")
+    files = builder.scaffold()
+
+    print(f"[OK] Project scaffolded: {len(files)} files")
+    print(f"     cd {output_dir} && npm install && npx expo start")
 
 def _load_spec_into_graph(graph, spec):
     """Convert a spec dict into graph nodes and edges."""
@@ -462,6 +486,13 @@ def main():
     p_diff.add_argument("--before", help="Path to previous graph")
     p_diff.add_argument("--after", help="Path to current graph")
 
+    # build
+    p_build = sub.add_parser("build", help="Scaffold a runnable Expo project from compiled artifacts")
+    p_build.add_argument("--graph", help="Path to experience graph JSON")
+    p_build.add_argument("--output", default="build", help="Output directory for the Expo project")
+    p_build.add_argument("--name", help="App name (default: xos-app)")
+
+
     args = parser.parse_args()
 
     if args.command == "init":
@@ -484,6 +515,8 @@ def main():
         cmd_change(args)
     elif args.command == "clarify":
         cmd_clarify(args)
+    elif args.command == "build":
+        cmd_build(args)
     elif args.command == "diff":
         cmd_diff(args)
     else:
